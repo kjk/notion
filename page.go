@@ -20,6 +20,9 @@ type Page struct {
 	// Properties differ between parent type.
 	// See the `UnmarshalJSON` method.
 	Properties interface{} `json:"properties"`
+
+	// RawJSON is for debugging, shows JSON response from the server
+	RawJSON []byte `json:"-"`
 }
 
 type PageParent struct {
@@ -46,12 +49,15 @@ type DatabasePageProperty struct {
 	Type DatabasePropertyType `json:"type"`
 
 	RichText    []RichText        `json:"rich_text,omitempty"`
-	Number      *NumberMetadata   `json:"number,omitempty"`
+	Number      float64           `json:"number,omitempty"`
 	Select      *SelectOptions    `json:"select,omitempty"`
 	MultiSelect []SelectOptions   `json:"multi_select,omitempty"`
 	Formula     *FormulaMetadata  `json:"formula,omitempty"`
 	Relation    *RelationMetadata `json:"relation,omitempty"`
 	Rollup      *RollupMetadata   `json:"rollup,omitempty"`
+
+	// RawJSON is for debugging, shows JSON response from the server
+	RawJSON []byte `json:"-"`
 }
 
 // CreatePageParams are the params used for creating a page.

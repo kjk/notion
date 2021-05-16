@@ -6,6 +6,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"io"
+	"io/ioutil"
 	"net/http"
 	"net/url"
 	"strconv"
@@ -135,15 +136,24 @@ func (c *Client) FindPageByID(ctx context.Context, id string) (page Page, err er
 	if err != nil {
 		return Page{}, fmt.Errorf("notion: failed to make HTTP request: %w", err)
 	}
-	defer res.Body.Close()
+
+	d, err := ioutil.ReadAll(res.Body)
+	res.Body.Close()
 
 	if res.StatusCode != http.StatusOK {
 		return Page{}, fmt.Errorf("notion: failed to find page: %w", parseErrorResponse(res))
 	}
+	//fmt.Printf("Body:\n%s\n", string(d))
 
-	err = json.NewDecoder(res.Body).Decode(&page)
+	page.RawJSON = d
 	if err != nil {
-		return Page{}, fmt.Errorf("notion: failed to parse HTTP response: %w", err)
+		return page, err
+	}
+
+	err = json.Unmarshal(d, &page)
+	page.RawJSON = d
+	if err != nil {
+		return page, fmt.Errorf("notion: failed to parse HTTP response: %w", err)
 	}
 
 	return page, nil
@@ -172,15 +182,21 @@ func (c *Client) CreatePage(ctx context.Context, params CreatePageParams) (page 
 	if err != nil {
 		return Page{}, fmt.Errorf("notion: failed to make HTTP request: %w", err)
 	}
-	defer res.Body.Close()
 
+	d, err := ioutil.ReadAll(res.Body)
+	res.Body.Close()
 	if res.StatusCode != http.StatusOK {
 		return Page{}, fmt.Errorf("notion: failed to create page: %w", parseErrorResponse(res))
 	}
 
-	err = json.NewDecoder(res.Body).Decode(&page)
+	page.RawJSON = d
 	if err != nil {
-		return Page{}, fmt.Errorf("notion: failed to parse HTTP response: %w", err)
+		return page, err
+	}
+
+	err = json.Unmarshal(d, &page)
+	if err != nil {
+		return page, fmt.Errorf("notion: failed to parse HTTP response: %w", err)
 	}
 
 	return page, nil
