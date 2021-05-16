@@ -1,3 +1,3 @@
-module github.com/dstotijn/go-notion
+module github.com/kjk/notion
 
 go 1.16
