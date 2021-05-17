@@ -52,13 +52,13 @@ func getPageInfo2(apiKey string, pageID string) {
 
 	c := getClient(apiKey)
 	ctx := context.Background()
-	page, err := c.FindPageByID(ctx, pageID)
+	page, err := c.GetPage(ctx, pageID)
 	if err != nil {
 		logf("page.RawJSON: '%s'\n", page.RawJSON)
 		ppJSON(page.RawJSON)
 		must(err)
 	}
-	showPageInfo(&page)
+	showPageInfo(page)
 }
 
 func getPageInfo(apiKey string, pageID string) {

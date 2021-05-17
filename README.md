@@ -5,9 +5,8 @@
 [![GitHub](https://img.shields.io/github/license/dstotijn/go-notion)](LICENSE)
 [![Go Report Card](https://goreportcard.com/badge/github.com/dstotijn/go-notion)](https://goreportcard.com/report/github.com/dstotijn/go-notion)
 
-**go-notion** is a client for the
-[Notion API](https://developers.notion.com/reference), written in
-[Go](https://golang.org/).
+**notion** is a Go client for the
+ [Notion API](https://developers.notion.com/reference). Based on github.com/dstotijn/go-notion
 
 ## Features
 
@@ -16,7 +15,7 @@ as of May 15, 2021:
 
 - [x] [Retrieve a database](https://pkg.go.dev/github.com/dstotijn/go-notion#Client.FindDatabaseByID)
 - [x] [Query a database](https://pkg.go.dev/github.com/dstotijn/go-notion#Client.QueryDatabase)
-- [x] [Retrieve a page](https://pkg.go.dev/github.com/dstotijn/go-notion#Client.FindPageByID)
+- [x] [Retrieve a page](https://pkg.go.dev/github.com/dstotijn/go-notion#Client.GetPage)
 - [x] [Create a page](https://pkg.go.dev/github.com/dstotijn/go-notion#Client.CreatePage)
 - [x] [Update page properties](https://pkg.go.dev/github.com/dstotijn/go-notion#Client.UpdatePageProps)
 - [x] [Retrieve block children](https://pkg.go.dev/github.com/dstotijn/go-notion#Client.FindBlockChildrenByID)
@@ -51,7 +50,7 @@ Then, use the methods defined on `Client` to make requests to the API. For
 example:
 
 ```go
-page, err := client.FindPageByID("18d35eb5-91f1-4dcb-85b0-c340fd965015")
+page, err := client.GetPage("18d35eb5-91f1-4dcb-85b0-c340fd965015")
 if err != nil {
     // Handle error...
 }

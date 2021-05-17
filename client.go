@@ -124,39 +124,39 @@ func (c *Client) QueryDatabase(ctx context.Context, id string, query DatabaseQue
 	return result, nil
 }
 
-// FindPageByID fetches a page by ID.
+// GetPage fetches information about a page by ID
 // See: https://developers.notion.com/reference/get-page
-func (c *Client) FindPageByID(ctx context.Context, id string) (page Page, err error) {
+func (c *Client) GetPage(ctx context.Context, id string) (*Page, error) {
+	var p Page
 	req, err := c.newRequest(ctx, http.MethodGet, "/pages/"+id, nil)
 	if err != nil {
-		return Page{}, fmt.Errorf("notion: invalid request: %w", err)
+		return &p, fmt.Errorf("notion: invalid request: %w", err)
 	}
 
 	res, err := c.httpClient.Do(req)
 	if err != nil {
-		return Page{}, fmt.Errorf("notion: failed to make HTTP request: %w", err)
+		return &p, fmt.Errorf("notion: failed to make HTTP request: %w", err)
 	}
 
 	d, err := ioutil.ReadAll(res.Body)
 	res.Body.Close()
 
 	if res.StatusCode != http.StatusOK {
-		return Page{}, fmt.Errorf("notion: failed to find page: %w", parseErrorResponse(res))
+		return &p, fmt.Errorf("notion: failed to find page: %w", parseErrorResponse(res))
 	}
-	//fmt.Printf("Body:\n%s\n", string(d))
 
-	page.RawJSON = d
+	p.RawJSON = d
 	if err != nil {
-		return page, err
+		return &p, err
 	}
 
-	err = json.Unmarshal(d, &page)
-	page.RawJSON = d
+	err = json.Unmarshal(d, &p)
+	p.RawJSON = d
 	if err != nil {
-		return page, fmt.Errorf("notion: failed to parse HTTP response: %w", err)
+		return &p, fmt.Errorf("notion: failed to parse HTTP response: %w", err)
 	}
 
-	return page, nil
+	return &p, nil
 }
 
 // CreatePage creates a new page in the specified database or as a child of an existing page.
