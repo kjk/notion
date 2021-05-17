@@ -1,33 +1,33 @@
 # go-notion
 
-[![GitHub tag (latest SemVer)](https://img.shields.io/github/v/tag/dstotijn/go-notion?label=go%20module)](https://github.com/dstotijn/go-notion/tags)
-[![Go Reference](https://pkg.go.dev/badge/github.com/dstotijn/go-notion.svg)](https://pkg.go.dev/github.com/dstotijn/go-notion)
+[![GitHub tag (latest SemVer)](https://img.shields.io/github/v/tag/dstotijn/go-notion?label=go%20module)](https://github.com/kjk/notion/tags)
+[![Go Reference](https://pkg.go.dev/badge/github.com/kjk/notion.svg)](https://pkg.go.dev/github.com/kjk/notion)
 [![GitHub](https://img.shields.io/github/license/dstotijn/go-notion)](LICENSE)
-[![Go Report Card](https://goreportcard.com/badge/github.com/dstotijn/go-notion)](https://goreportcard.com/report/github.com/dstotijn/go-notion)
+[![Go Report Card](https://goreportcard.com/badge/github.com/kjk/notion)](https://goreportcard.com/report/github.com/kjk/notion)
 
 **notion** is a Go client for the
- [Notion API](https://developers.notion.com/reference). Based on github.com/dstotijn/go-notion
+ [Notion API](https://developers.notion.com/reference). Based on github.com/kjk/notion
 
 ## Features
 
 The client supports all (non-deprecated) endpoints available in the Notion API,
 as of May 15, 2021:
 
-- [x] [Retrieve a database](https://pkg.go.dev/github.com/dstotijn/go-notion#Client.FindDatabaseByID)
-- [x] [Query a database](https://pkg.go.dev/github.com/dstotijn/go-notion#Client.QueryDatabase)
-- [x] [Retrieve a page](https://pkg.go.dev/github.com/dstotijn/go-notion#Client.GetPage)
-- [x] [Create a page](https://pkg.go.dev/github.com/dstotijn/go-notion#Client.CreatePage)
-- [x] [Update page properties](https://pkg.go.dev/github.com/dstotijn/go-notion#Client.UpdatePageProps)
-- [x] [Retrieve block children](https://pkg.go.dev/github.com/dstotijn/go-notion#Client.FindBlockChildrenByID)
-- [x] [Append block children](https://pkg.go.dev/github.com/dstotijn/go-notion#Client.AppendBlockChildren)
-- [x] [Retrieve a user](https://pkg.go.dev/github.com/dstotijn/go-notion#Client.FindUserByID)
-- [x] [List all users](https://pkg.go.dev/github.com/dstotijn/go-notion#Client.ListUsers)
-- [x] [Search](https://pkg.go.dev/github.com/dstotijn/go-notion#Client.Search)
+- [x] [Retrieve a database](https://pkg.go.dev/github.com/kjk/notion#Client.FindDatabaseByID)
+- [x] [Query a database](https://pkg.go.dev/github.com/kjk/notion#Client.QueryDatabase)
+- [x] [Retrieve a page](https://pkg.go.dev/github.com/kjk/notion#Client.GetPage)
+- [x] [Create a page](https://pkg.go.dev/github.com/kjk/notion#Client.CreatePage)
+- [x] [Update page properties](https://pkg.go.dev/github.com/kjk/notion#Client.UpdatePageProps)
+- [x] [Retrieve block children](https://pkg.go.dev/github.com/kjk/notion#Client.FindBlockChildrenByID)
+- [x] [Append block children](https://pkg.go.dev/github.com/kjk/notion#Client.AppendBlockChildren)
+- [x] [Retrieve a user](https://pkg.go.dev/github.com/kjk/notion#Client.FindUserByID)
+- [x] [List all users](https://pkg.go.dev/github.com/kjk/notion#Client.ListUsers)
+- [x] [Search](https://pkg.go.dev/github.com/kjk/notion#Client.Search)
 
 ## Installation
 
 ```sh
-$ go get github.com/dstotijn/go-notion
+$ go get github.com/kjk/notion
 ```
 
 ## Getting started
@@ -39,7 +39,7 @@ To obtain an API key, follow Notion’s [getting started guide](https://develope
 First, construct a new `Client`:
 
 ```go
-import "github.com/dstotijn/go-notion"
+import "github.com/kjk/notion"
 
 (...)
 
@@ -57,7 +57,7 @@ if err != nil {
 ```
 
 👉 Check out the docs on
-[pkg.go.dev](https://pkg.go.dev/github.com/dstotijn/go-notion) for further
+[pkg.go.dev](https://pkg.go.dev/github.com/kjk/notion) for further
 reference and examples.
 
 ## Status
@@ -75,8 +75,3 @@ changes in its code until `v1.0` of the module is released.
 ## License
 
 [MIT License](LICENSE)
-
----
-
-© 2021 David Stotijn — [Twitter](https://twitter.com/dstotijn),
-[Email](mailto:dstotijn@gmail.com)
