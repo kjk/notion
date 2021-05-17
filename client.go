@@ -24,28 +24,25 @@ type Client struct {
 	httpClient *http.Client
 }
 
-// ClientOption is used to override default client behavior.
-type ClientOption func(*Client)
+// ClientOptions describes options when creating client
+type ClientOptions struct {
+	HTTPClient *http.Client
+}
 
 // NewClient returns a new Client.
-func NewClient(apiKey string, opts ...ClientOption) *Client {
+func NewClient(apiKey string, opts *ClientOptions) *Client {
 	c := &Client{
 		apiKey:     apiKey,
 		httpClient: http.DefaultClient,
 	}
 
-	for _, opt := range opts {
-		opt(c)
+	if opts != nil {
+		if opts.HTTPClient != nil {
+			c.httpClient = opts.HTTPClient
+		}
 	}
 
 	return c
-}
-
-// WithHTTPClient overrides the default http.Client.
-func WithHTTPClient(httpClient *http.Client) ClientOption {
-	return func(c *Client) {
-		c.httpClient = httpClient
-	}
 }
 
 func (c *Client) newRequest(ctx context.Context, method, url string, body io.Reader) (*http.Request, error) {
