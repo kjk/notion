@@ -2,7 +2,6 @@ package main
 
 import (
 	"context"
-	"fmt"
 
 	"github.com/kjk/notion"
 	"github.com/tidwall/pretty"
@@ -15,8 +14,23 @@ import (
 //   page in a database https://www.notion.so/A-row-that-is-not-empty-page-e56b74a6398a43848137cca2a0de20b2
 // or the page given with -id argument (in which case also needs )
 
-func showRichText(richText []notion.RichText) {
-	// TODO: implement me
+func getIndent(n int) string {
+	s := ""
+	for n > 0 {
+		n -= 1
+		s += "  "
+	}
+	return s
+}
+
+func showRichText(indent int, name string, richText []notion.RichText) {
+	s := getIndent(indent)
+	// TODO: better implementation
+	if name != "" {
+		logf("%s%s: %v\n", s, name, richText)
+		return
+	}
+	logf("%s%v\n", s, richText)
 }
 
 func ppJSON(d []byte) {
@@ -40,15 +54,14 @@ func showPageInfo(page *notion.Page) {
 	switch prop := page.Properties.(type) {
 	case notion.PageProperties:
 		logf("  page properties:\n")
-		// TODO: better show rich text
-		logf("    title: %v\n", prop.Title.Title)
+		showRichText(2, "Title", prop.Title.Title)
 	case notion.DatabasePageProperties:
 		logf("  database properties (NYI):\n")
 	}
 }
 
 func getPageInfo2(apiKey string, pageID string) {
-	fmt.Printf("getPageInfo: pageID='%s'\n", pageID)
+	logf("getPageInfo: pageID='%s'\n", pageID)
 
 	c := getClient(apiKey)
 	ctx := context.Background()

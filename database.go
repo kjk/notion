@@ -12,6 +12,8 @@ type Database struct {
 	LastEditedTime time.Time          `json:"last_edited_time"`
 	Title          []RichText         `json:"title"`
 	Properties     DatabaseProperties `json:"properties"`
+
+	RawJSON []byte `json:"-"`
 }
 
 // DatabaseProperties is a mapping of properties defined on a database.

@@ -19,13 +19,14 @@ var logf = u.Logf
 var panicIf = u.PanicIf
 
 func getClient(apiKey string) *notion.Client {
-	return notion.NewClient(apiKey)
+	return notion.NewClient(apiKey, nil)
 }
 
 func main() {
 	var (
 		flgGetPageInfo      bool
 		flgGetBlockChildren bool
+		flgGetDatabase      bool
 
 		flgAPIKey string
 		flgID     string
@@ -33,6 +34,7 @@ func main() {
 	{
 		flag.BoolVar(&flgGetPageInfo, "get-page-info", false, "get information about a page")
 		flag.BoolVar(&flgGetBlockChildren, "get-block-children", false, "get children of a block")
+		flag.BoolVar(&flgGetDatabase, "get-database", false, "get database information")
 		flag.StringVar(&flgID, "id", "", "id of page or block (if not using default test pages)")
 		flag.StringVar(&flgAPIKey, "api-key", "", "api key for authentication (if not using default test page)")
 		flag.Parse()
@@ -49,6 +51,11 @@ func main() {
 
 	if flgGetBlockChildren {
 		getBlockChildren(flgAPIKey, flgID)
+		return
+	}
+
+	if flgGetDatabase {
+		getDatabaseInfo(flgAPIKey, flgID)
 		return
 	}
 

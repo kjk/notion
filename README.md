@@ -13,7 +13,7 @@
 The client supports all (non-deprecated) endpoints available in the Notion API,
 as of May 15, 2021:
 
-- [x] [Retrieve a database](https://pkg.go.dev/github.com/kjk/notion#Client.FindDatabaseByID)
+- [x] [Retrieve a database](https://pkg.go.dev/github.com/kjk/notion#Client.GetDatabase)
 - [x] [Query a database](https://pkg.go.dev/github.com/kjk/notion#Client.QueryDatabase)
 - [x] [Retrieve a page](https://pkg.go.dev/github.com/kjk/notion#Client.GetPage)
 - [x] [Create a page](https://pkg.go.dev/github.com/kjk/notion#Client.CreatePage)
