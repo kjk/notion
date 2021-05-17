@@ -135,17 +135,17 @@ func (c *Client) GetPage(ctx context.Context, id string) (*Page, error) {
 
 	res, err := c.httpClient.Do(req)
 	if err != nil {
-		return &p, fmt.Errorf("notion: failed to make HTTP request: %w", err)
+		return nil, fmt.Errorf("notion: failed to make HTTP request: %w", err)
 	}
 
 	d, err := ioutil.ReadAll(res.Body)
 	res.Body.Close()
+	p.RawJSON = d
 
 	if res.StatusCode != http.StatusOK {
 		return &p, fmt.Errorf("notion: failed to find page: %w", parseErrorResponse(res))
 	}
 
-	p.RawJSON = d
 	if err != nil {
 		return &p, err
 	}
@@ -239,12 +239,13 @@ func (c *Client) UpdatePageProps(ctx context.Context, pageID string, params Upda
 	return page, nil
 }
 
-// FindBlockChildrenByID returns a list of block children for a given block ID.
-// See: https://developers.notion.com/reference/post-database-query
-func (c *Client) FindBlockChildrenByID(ctx context.Context, blockID string, query *PaginationQuery) (result BlockChildrenResponse, err error) {
+// GetBlockChildren returns a list of block children for a given block ID.
+// See: https://developers.notion.com/reference/get-block-children
+func (c *Client) GetBlockChildren(ctx context.Context, blockID string, query *PaginationQuery) (*BlockChildrenResponse, error) {
+	var bcr BlockChildrenResponse
 	req, err := c.newRequest(ctx, http.MethodGet, fmt.Sprintf("/blocks/%v/children", blockID), nil)
 	if err != nil {
-		return BlockChildrenResponse{}, fmt.Errorf("notion: invalid request: %w", err)
+		return nil, fmt.Errorf("notion: invalid request: %w", err)
 	}
 
 	if query != nil {
@@ -260,20 +261,23 @@ func (c *Client) FindBlockChildrenByID(ctx context.Context, blockID string, quer
 
 	res, err := c.httpClient.Do(req)
 	if err != nil {
-		return BlockChildrenResponse{}, fmt.Errorf("notion: failed to make HTTP request: %w", err)
+		return nil, fmt.Errorf("notion: failed to make HTTP request: %w", err)
 	}
-	defer res.Body.Close()
+
+	d, err := ioutil.ReadAll(res.Body)
+	res.Body.Close()
+	bcr.RawJSON = d
 
 	if res.StatusCode != http.StatusOK {
-		return BlockChildrenResponse{}, fmt.Errorf("notion: failed to find block children: %w", parseErrorResponse(res))
+		return &bcr, fmt.Errorf("notion: failed to find block children: %w", parseErrorResponse(res))
 	}
 
-	err = json.NewDecoder(res.Body).Decode(&result)
+	err = json.Unmarshal(d, &bcr)
 	if err != nil {
-		return BlockChildrenResponse{}, fmt.Errorf("notion: failed to parse HTTP response: %w", err)
+		return &bcr, fmt.Errorf("notion: failed to parse HTTP response: %w", err)
 	}
 
-	return result, nil
+	return &bcr, nil
 }
 
 // AppendBlockChildren appends child content (blocks) to an existing block.

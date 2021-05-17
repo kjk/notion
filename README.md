@@ -1,12 +1,12 @@
 # go-notion
 
-[![GitHub tag (latest SemVer)](https://img.shields.io/github/v/tag/dstotijn/go-notion?label=go%20module)](https://github.com/kjk/notion/tags)
+[![GitHub tag (latest SemVer)](https://img.shields.io/github/v/tag/kjk/notion?label=go%20module)](https://github.com/kjk/notion/tags)
 [![Go Reference](https://pkg.go.dev/badge/github.com/kjk/notion.svg)](https://pkg.go.dev/github.com/kjk/notion)
-[![GitHub](https://img.shields.io/github/license/dstotijn/go-notion)](LICENSE)
+[![GitHub](https://img.shields.io/github/license/kjk/notion)](LICENSE)
 [![Go Report Card](https://goreportcard.com/badge/github.com/kjk/notion)](https://goreportcard.com/report/github.com/kjk/notion)
 
 **notion** is a Go client for the
- [Notion API](https://developers.notion.com/reference). Based on github.com/kjk/notion
+ [Notion API](https://developers.notion.com/reference). Based on github.com/dstotijn/go-notion
 
 ## Features
 
@@ -18,7 +18,7 @@ as of May 15, 2021:
 - [x] [Retrieve a page](https://pkg.go.dev/github.com/kjk/notion#Client.GetPage)
 - [x] [Create a page](https://pkg.go.dev/github.com/kjk/notion#Client.CreatePage)
 - [x] [Update page properties](https://pkg.go.dev/github.com/kjk/notion#Client.UpdatePageProps)
-- [x] [Retrieve block children](https://pkg.go.dev/github.com/kjk/notion#Client.FindBlockChildrenByID)
+- [x] [Retrieve block children](https://pkg.go.dev/github.com/kjk/notion#Client.GetBlockChildren)
 - [x] [Append block children](https://pkg.go.dev/github.com/kjk/notion#Client.AppendBlockChildren)
 - [x] [Retrieve a user](https://pkg.go.dev/github.com/kjk/notion#Client.FindUserByID)
 - [x] [List all users](https://pkg.go.dev/github.com/kjk/notion#Client.ListUsers)

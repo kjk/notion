@@ -24,13 +24,16 @@ func getClient(apiKey string) *notion.Client {
 
 func main() {
 	var (
-		flgGetPageInfo bool
-		flgAPIKey      string
-		flgPageID      string
+		flgGetPageInfo      bool
+		flgGetBlockChildren bool
+
+		flgAPIKey string
+		flgID     string
 	)
 	{
 		flag.BoolVar(&flgGetPageInfo, "get-page-info", false, "get information about a page")
-		flag.StringVar(&flgPageID, "id", "", "id of page or block (if not using default test pages)")
+		flag.BoolVar(&flgGetBlockChildren, "get-block-children", false, "get children of a block")
+		flag.StringVar(&flgID, "id", "", "id of page or block (if not using default test pages)")
 		flag.StringVar(&flgAPIKey, "api-key", "", "api key for authentication (if not using default test page)")
 		flag.Parse()
 
@@ -40,7 +43,12 @@ func main() {
 	}
 
 	if flgGetPageInfo {
-		getPageInfo(flgAPIKey, flgPageID)
+		getPageInfo(flgAPIKey, flgID)
+		return
+	}
+
+	if flgGetBlockChildren {
+		getBlockChildren(flgAPIKey, flgID)
 		return
 	}
 
