@@ -82,7 +82,7 @@ func (c *Client) GetDatabase(ctx context.Context, id string) (*Database, error) 
 	db.RawJSON = d
 
 	if res.StatusCode != http.StatusOK {
-		return nil, fmt.Errorf("notion: failed to find database: %w", parseErrorResponse(res))
+		return nil, fmt.Errorf("notion: failed to find database: %w", parseErrorResponseJSON(d))
 	}
 
 	if err != nil {
@@ -149,7 +149,7 @@ func (c *Client) GetPage(ctx context.Context, id string) (*Page, error) {
 	p.RawJSON = d
 
 	if res.StatusCode != http.StatusOK {
-		return &p, fmt.Errorf("notion: failed to find page: %w", parseErrorResponse(res))
+		return &p, fmt.Errorf("notion: failed to find page: %w", parseErrorResponseJSON(d))
 	}
 
 	if err != nil {
@@ -191,11 +191,12 @@ func (c *Client) CreatePage(ctx context.Context, params CreatePageParams) (page 
 
 	d, err := ioutil.ReadAll(res.Body)
 	res.Body.Close()
+	page.RawJSON = d
+
 	if res.StatusCode != http.StatusOK {
-		return Page{}, fmt.Errorf("notion: failed to create page: %w", parseErrorResponse(res))
+		return page, fmt.Errorf("notion: failed to create page: %w", parseErrorResponseJSON(d))
 	}
 
-	page.RawJSON = d
 	if err != nil {
 		return page, err
 	}
@@ -274,8 +275,12 @@ func (c *Client) GetBlockChildren(ctx context.Context, blockID string, query *Pa
 	res.Body.Close()
 	bcr.RawJSON = d
 
+	if err != nil {
+		return &bcr, err
+	}
+
 	if res.StatusCode != http.StatusOK {
-		return &bcr, fmt.Errorf("notion: failed to find block children: %w", parseErrorResponse(res))
+		return &bcr, fmt.Errorf("notion: failed to find block children: %w", parseErrorResponseJSON(d))
 	}
 
 	err = json.Unmarshal(d, &bcr)

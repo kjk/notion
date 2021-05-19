@@ -67,3 +67,14 @@ func parseErrorResponse(res *http.Response) error {
 
 	return &apiErr
 }
+
+func parseErrorResponseJSON(d []byte) error {
+	var apiErr APIError
+
+	err := json.Unmarshal(d, &apiErr)
+	if err != nil {
+		return fmt.Errorf("failed to parse error from HTTP response: %w", err)
+	}
+
+	return &apiErr
+}

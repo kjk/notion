@@ -67,9 +67,10 @@ func getPageInfo2(apiKey string, pageID string) {
 	ctx := context.Background()
 	page, err := c.GetPage(ctx, pageID)
 	if err != nil {
+		logf("GetPage() failed with: '%s'\n", err)
 		logf("page.RawJSON: '%s'\n", page.RawJSON)
 		ppJSON(page.RawJSON)
-		must(err)
+		return
 	}
 	showPageInfo(page)
 }

@@ -6,7 +6,7 @@
 [![Go Report Card](https://goreportcard.com/badge/github.com/kjk/notion)](https://goreportcard.com/report/github.com/kjk/notion)
 
 **notion** is a Go client for the
- [Notion API](https://developers.notion.com/reference). Based on github.com/dstotijn/go-notion
+ [Notion API](https://developers.notion.com/reference). Based on https://github.com/dstotijn/go-notion
 
 ## Features
 
