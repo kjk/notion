@@ -1,4 +1,4 @@
-# go-notion
+# notion
 
 [![GitHub tag (latest SemVer)](https://img.shields.io/github/v/tag/kjk/notion?label=go%20module)](https://github.com/kjk/notion/tags)
 [![Go Reference](https://pkg.go.dev/badge/github.com/kjk/notion.svg)](https://pkg.go.dev/github.com/kjk/notion)
