@@ -6,7 +6,7 @@
 [![Go Report Card](https://goreportcard.com/badge/github.com/kjk/notion)](https://goreportcard.com/report/github.com/kjk/notion)
 
 **notion** is a Go client for the
- [Notion API](https://developers.notion.com/reference). Based on https://github.com/dstotijn/go-notion (as of https://github.com/dstotijn/go-notion/commit/55aa9db5c7a72af2a57ac953ebbbdbdec3e1efa1, May 19 2021)
+ [Notion API](https://developers.notion.com/reference).
 
 ## Features
 
@@ -65,13 +65,14 @@ Official Notion API is still limited:
 * not all block types are supported
 * no way to avoid re-downloading data we already have
 
-For more functionality use unofficial API client
-https://github.com/kjk/notionapi
+## Other clients
 
-### To do
-
-- [ ] Write tests
+* https://github.com/kjk/notionapi : another Go client I wrote, this one uses unofficial API
+* https://github.com/makenotion/notion-sdk-js : official node SDK from Notion
+* https://github.com/dstotijn/go-notion : another Go client
 
 ## License
 
 [MIT License](LICENSE)
+
+I based this code on https://github.com/dstotijn/go-notion (as of https://github.com/dstotijn/go-notion/commit/55aa9db5c7a72af2a57ac953ebbbdbdec3e1efa1, May 19 2021). I made API changes so it's not compatible with `go-notion`.
