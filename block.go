@@ -21,6 +21,8 @@ type Block struct {
 	ToDo             *ToDo          `json:"to_do,omitempty"`
 	Toggle           *RichTextBlock `json:"toggle,omitempty"`
 	ChildPage        *ChildPage     `json:"rich_text,omitempty"`
+
+	RawJSON []byte `json:"-"`
 }
 
 type RichTextBlock struct {

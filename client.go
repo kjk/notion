@@ -211,7 +211,7 @@ func (c *Client) GetBlockChildren(ctx context.Context, blockID string, query *Pa
 
 // AppendBlockChildren appends child content (blocks) to an existing block.
 // See: https://developers.notion.com/reference/patch-block-children
-func (c *Client) AppendBlockChildren(ctx context.Context, blockID string, children []Block) (block Block, err error) {
+func (c *Client) AppendBlockChildren(ctx context.Context, blockID string, children []Block) (*Block, error) {
 	type PostBody struct {
 		Children []Block `json:"children"`
 	}
@@ -219,33 +219,20 @@ func (c *Client) AppendBlockChildren(ctx context.Context, blockID string, childr
 	dto := PostBody{children}
 	body := &bytes.Buffer{}
 
-	err = json.NewEncoder(body).Encode(dto)
+	err := json.NewEncoder(body).Encode(dto)
 	if err != nil {
-		return Block{}, fmt.Errorf("notion: failed to encode body params to JSON: %w", err)
+		return nil, fmt.Errorf("notion: failed to encode body params to JSON: %w", err)
 	}
 
 	uri := "/blocks/" + blockID + "/children"
 	req, err := c.newRequest(ctx, http.MethodPatch, uri, body)
 	if err != nil {
-		return Block{}, fmt.Errorf("notion: invalid request: %w", err)
+		return nil, fmt.Errorf("notion: invalid request: %w", err)
 	}
 
-	resp, err := c.httpClient.Do(req)
-	if err != nil {
-		return Block{}, fmt.Errorf("notion: failed to make HTTP request: %w", err)
-	}
-	defer resp.Body.Close()
-
-	if resp.StatusCode != http.StatusOK {
-		return Block{}, fmt.Errorf("notion: failed to append block children: %w", parseErrorResponse(resp))
-	}
-
-	err = json.NewDecoder(resp.Body).Decode(&block)
-	if err != nil {
-		return Block{}, fmt.Errorf("notion: failed to parse HTTP response: %w", err)
-	}
-
-	return block, nil
+	var res Block
+	res.RawJSON, err = c.doHTTPAndUnmarshalResponse(req, &res, "append block children")
+	return &res, err
 }
 
 // FindUserByID fetches a user by ID.
