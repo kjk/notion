@@ -22,7 +22,7 @@ type DatabaseProperties map[string]DatabaseProperty
 // Database property metadata types.
 type (
 	NumberMetadata struct {
-		Format string `json:"format"`
+		Format NumberFormat `json:"format"`
 	}
 	SelectMetadata struct {
 		Options []SelectOptions `json:"options"`
@@ -31,9 +31,9 @@ type (
 		Expression string `json:"expression"`
 	}
 	RelationMetadata struct {
-		DatabaseID     string  `json:"database_id,omitempty"`
-		SyncedPropName *string `json:"synced_property_name,omitempty"`
-		SyncedPropID   *string `json:"synced_property_id,omitempty"`
+		DatabaseID     string `json:"database_id,omitempty"`
+		SyncedPropName string `json:"synced_property_name,omitempty"`
+		SyncedPropID   string `json:"synced_property_id,omitempty"`
 	}
 	RollupMetadata struct {
 		RelationPropName string `json:"relation_property_name,omitempty"`
@@ -64,10 +64,10 @@ type DatabaseProperty struct {
 
 // DatabaseQuery is used for quering a database.
 type DatabaseQuery struct {
-	Filter      DatabaseQueryFilter `json:"filter,omitempty"`
-	Sorts       []DatabaseQuerySort `json:"sorts,omitempty"`
-	StartCursor string              `json:"start_cursor,omitempty"`
-	PageSize    int                 `json:"page_size,omitempty"`
+	Filter      *DatabaseQueryFilter `json:"filter,omitempty"`
+	Sorts       []DatabaseQuerySort  `json:"sorts,omitempty"`
+	StartCursor string               `json:"start_cursor,omitempty"`
+	PageSize    int                  `json:"page_size,omitempty"`
 }
 
 // DatabaseQueryResponse contains the results and pagination data from a query request.
@@ -84,15 +84,15 @@ type DatabaseQueryResponse struct {
 type DatabaseQueryFilter struct {
 	Property string `json:"property,omitempty"`
 
-	Text        TextDatabaseQueryFilter        `json:"text,omitempty"`
-	Number      NumberDatabaseQueryFilter      `json:"number,omitempty"`
-	Checkbox    CheckboxDatabaseQueryFilter    `json:"checkbox,omitempty"`
-	Select      SelectDatabaseQueryFilter      `json:"select,omitempty"`
-	MultiSelect MultiSelectDatabaseQueryFilter `json:"multi_select,omitempty"`
-	Date        DateDatabaseQueryFilter        `json:"date,omitempty"`
-	People      PeopleDatabaseQueryFilter      `json:"people,omitempty"`
-	Files       FilesDatabaseQueryFilter       `json:"files,omitempty"`
-	Relation    RelationDatabaseQueryFilter    `json:"relation,omitempty"`
+	Text        *TextDatabaseQueryFilter        `json:"text,omitempty"`
+	Number      *NumberDatabaseQueryFilter      `json:"number,omitempty"`
+	Checkbox    *CheckboxDatabaseQueryFilter    `json:"checkbox,omitempty"`
+	Select      *SelectDatabaseQueryFilter      `json:"select,omitempty"`
+	MultiSelect *MultiSelectDatabaseQueryFilter `json:"multi_select,omitempty"`
+	Date        *DateDatabaseQueryFilter        `json:"date,omitempty"`
+	People      *PeopleDatabaseQueryFilter      `json:"people,omitempty"`
+	Files       *FilesDatabaseQueryFilter       `json:"files,omitempty"`
+	Relation    *RelationDatabaseQueryFilter    `json:"relation,omitempty"`
 
 	Or  []DatabaseQueryFilter `json:"or,omitempty"`
 	And []DatabaseQueryFilter `json:"and,omitempty"`
@@ -189,6 +189,7 @@ type DatabaseQuerySort struct {
 
 type (
 	DatabasePropertyType string
+	NumberFormat         string
 	SortTimestamp        string
 	SortDirection        string
 )
@@ -214,6 +215,19 @@ const (
 	DBPropTypeCreatedBy      DatabasePropertyType = "created_by"
 	DBPropTypeLastEditedTime DatabasePropertyType = "last_edited_time"
 	DBPropTypeLastEditedBy   DatabasePropertyType = "last_edited_by"
+
+	// Number format enums.
+	NumberFormatNumber           NumberFormat = "number"
+	NumberFormatNumberWithCommas NumberFormat = "number_with_commas"
+	NumberFormatPercent          NumberFormat = "percent"
+	NumberFormatDollar           NumberFormat = "dollar"
+	NumberFormatEuro             NumberFormat = "euro"
+	NumberFormatPound            NumberFormat = "pound"
+	NumberFormatPonud            NumberFormat = "yen"
+	NumberFormatRuble            NumberFormat = "ruble"
+	NumberFormatRupee            NumberFormat = "rupee"
+	NumberFormatWon              NumberFormat = "won"
+	NumberformatYuan             NumberFormat = "yuan"
 
 	// Sort timestamp enums.
 	SortTimeStampCreatedTime    SortTimestamp = "created_time"

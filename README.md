@@ -20,7 +20,7 @@ as of May 15, 2021:
 - [x] [Update page properties](https://pkg.go.dev/github.com/kjk/notion#Client.UpdatePageProps)
 - [x] [Retrieve block children](https://pkg.go.dev/github.com/kjk/notion#Client.GetBlockChildren)
 - [x] [Append block children](https://pkg.go.dev/github.com/kjk/notion#Client.AppendBlockChildren)
-- [x] [Retrieve a user](https://pkg.go.dev/github.com/kjk/notion#Client.FindUserByID)
+- [x] [Retrieve a user](https://pkg.go.dev/github.com/kjk/notion#Client.GetUser)
 - [x] [List all users](https://pkg.go.dev/github.com/kjk/notion#Client.ListUsers)
 - [x] [Search](https://pkg.go.dev/github.com/kjk/notion#Client.Search)
 
@@ -50,7 +50,7 @@ Then, use the methods defined on `Client` to make requests to the API. For
 example:
 
 ```go
-page, err := client.GetPage("18d35eb5-91f1-4dcb-85b0-c340fd965015")
+page, err := client.GetPage(context.Background(), "18d35eb5-91f1-4dcb-85b0-c340fd965015")
 if err != nil {
     // Handle error...
 }
