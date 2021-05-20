@@ -326,28 +326,35 @@ func (c *Client) AppendBlockChildren(ctx context.Context, blockID string, childr
 
 // FindUserByID fetches a user by ID.
 // See: https://developers.notion.com/reference/get-user
-func (c *Client) FindUserByID(ctx context.Context, id string) (user User, err error) {
+func (c *Client) GetUser(ctx context.Context, id string) (*User, error) {
 	req, err := c.newRequest(ctx, http.MethodGet, "/users/"+id, nil)
 	if err != nil {
-		return User{}, fmt.Errorf("notion: invalid request: %w", err)
+		return nil, fmt.Errorf("notion: invalid request: %w", err)
 	}
 
 	resp, err := c.httpClient.Do(req)
 	if err != nil {
-		return User{}, fmt.Errorf("notion: failed to make HTTP request: %w", err)
+		return nil, fmt.Errorf("notion: failed to make HTTP request: %w", err)
 	}
-	defer resp.Body.Close()
+
+	var res User
+	res.RawJSON, err = ioutil.ReadAll(resp.Body)
+	resp.Body.Close()
+
+	if err != nil {
+		return &res, err
+	}
 
 	if resp.StatusCode != http.StatusOK {
-		return User{}, fmt.Errorf("notion: failed to find user: %w", parseErrorResponse(resp))
+		return &res, fmt.Errorf("notion: failed to find user: %w", parseErrorResponseJSON(res.RawJSON))
 	}
 
-	err = json.NewDecoder(resp.Body).Decode(&user)
+	err = json.Unmarshal(res.RawJSON, &res)
 	if err != nil {
-		return User{}, fmt.Errorf("notion: failed to parse HTTP response: %w", err)
+		return &res, fmt.Errorf("notion: failed to parse HTTP response: %w", err)
 	}
 
-	return user, nil
+	return &res, nil
 }
 
 // ListUsers returns a list of all users, and pagination metadata.

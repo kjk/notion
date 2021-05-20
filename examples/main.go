@@ -28,15 +28,17 @@ func main() {
 		flgGetBlockChildren bool
 		flgGetDatabase      bool
 		flgListUsers        bool
+		flgGetUser          bool
 
 		flgAPIKey string
 		flgID     string
 	)
 	{
-		flag.BoolVar(&flgGetPageInfo, "get-page-info", false, "get information about a page")
-		flag.BoolVar(&flgGetBlockChildren, "get-block-children", false, "get children of a block")
-		flag.BoolVar(&flgGetDatabase, "get-database", false, "get database information")
+		flag.BoolVar(&flgGetPageInfo, "get-page-info", false, "get information about a page (use -id for page id)")
+		flag.BoolVar(&flgGetBlockChildren, "get-block-children", false, "get children of a block (use -id for parent id)")
+		flag.BoolVar(&flgGetDatabase, "get-database", false, "get database information (use -id for database id)")
 		flag.BoolVar(&flgListUsers, "list-users", false, "list users")
+		flag.BoolVar(&flgGetUser, "get-user", false, "get user (use -id for user id)")
 		flag.StringVar(&flgID, "id", "", "id of page or block (if not using default test pages)")
 		flag.StringVar(&flgAPIKey, "api-key", "", "api key for authentication (if not using default test page)")
 		flag.Parse()
@@ -63,6 +65,11 @@ func main() {
 
 	if flgListUsers {
 		listUsers(flgAPIKey)
+		return
+	}
+
+	if flgGetUser {
+		getUser(flgAPIKey, flgID)
 		return
 	}
 

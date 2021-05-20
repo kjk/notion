@@ -14,6 +14,8 @@ type User struct {
 
 	Person *Person `json:"person"`
 	Bot    *Bot    `json:"bot"`
+
+	RawJSON []byte `json:"-"`
 }
 
 // ListUsersResponse contains results (users) and pagination data returned from a list request.
