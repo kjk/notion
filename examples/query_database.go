@@ -27,9 +27,10 @@ func queryDatabase2(apiKey string, id string) {
 	ctx := context.Background()
 	dqr, err := c.QueryDatabase(ctx, id, nil)
 	if err != nil {
+		logf("QueryDatabase() failed with '%s'\n", err)
 		logf("RawJSON: '%s'\n", dqr.RawJSON)
 		ppJSON(dqr.RawJSON)
-		must(err)
+		return
 	}
 	showDatabaseQueryInfo(dqr)
 }

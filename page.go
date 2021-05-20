@@ -48,15 +48,17 @@ type DatabasePageProperty struct {
 	ID   string               `json:"id,omitempty"`
 	Type DatabasePropertyType `json:"type"`
 
-	Title       []RichText        `json:"title,omitempty"`
-	RichText    []RichText        `json:"rich_text,omitempty"`
-	Number      float64           `json:"number,omitempty"`
-	Select      *SelectOptions    `json:"select,omitempty"`
-	MultiSelect []SelectOptions   `json:"multi_select,omitempty"`
-	Date        *Date             `json:"date,omitempty"`
-	Formula     *FormulaMetadata  `json:"formula,omitempty"`
-	Relation    *RelationMetadata `json:"relation,omitempty"`
-	Rollup      *RollupMetadata   `json:"rollup,omitempty"`
+	Title       []RichText       `json:"title,omitempty"`
+	RichText    []RichText       `json:"rich_text,omitempty"`
+	Number      float64          `json:"number,omitempty"`
+	Select      *SelectOptions   `json:"select,omitempty"`
+	MultiSelect []SelectOptions  `json:"multi_select,omitempty"`
+	Date        *Date            `json:"date,omitempty"`
+	Formula     *FormulaMetadata `json:"formula,omitempty"`
+	// TODO: this could be an array of objects with "id" property, like:
+	// [ { "id": "uid" }]
+	//Relation    *RelationMetadata `json:"relation,omitempty"`
+	Rollup *RollupMetadata `json:"rollup,omitempty"`
 
 	// RawJSON is for debugging, shows JSON response from the server
 	RawJSON []byte `json:"-"`

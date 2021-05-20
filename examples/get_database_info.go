@@ -28,9 +28,10 @@ func getDabaseInfo2(apiKey string, id string) {
 	ctx := context.Background()
 	db, err := c.GetDatabase(ctx, id)
 	if err != nil {
+		logf("c.GetDatabase() failed with '%s'\n", err)
 		logf("db.RawJSON: '%s'\n", db.RawJSON)
 		ppJSON(db.RawJSON)
-		must(err)
+		return
 	}
 	showDatabaseInfo(db)
 }

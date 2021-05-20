@@ -17,6 +17,13 @@
       "program": "${workspaceFolder}/examples",
       "name": "Launch examples -query-db",
       "args": ["-query-db"],
+    },
+    {
+      "type": "go",
+      "request": "launch",
+      "program": "${workspaceFolder}/examples",
+      "name": "Launch examples -search",
+      "args": ["-search"],
     }
   ]
 }

@@ -50,9 +50,10 @@ func getBlockChildren2(apiKey string, blockID string) {
 	ctx := context.Background()
 	rsp, err := c.GetBlockChildren(ctx, blockID, nil)
 	if err != nil {
+		logf("GetBlockChildren() failed with '%s'\n", err)
 		logf("page.RawJSON: '%s'\n", rsp.RawJSON)
 		ppJSON(rsp.RawJSON)
-		must(err)
+		return
 	}
 	showBlockChildren(rsp)
 }

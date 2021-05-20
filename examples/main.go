@@ -30,6 +30,7 @@ func main() {
 		flgListUsers        bool
 		flgGetUser          bool
 		flgQueryDatabase    bool
+		flgSearch           bool
 
 		flgAPIKey string
 		flgID     string
@@ -41,6 +42,7 @@ func main() {
 		flag.BoolVar(&flgListUsers, "list-users", false, "list users")
 		flag.BoolVar(&flgGetUser, "get-user", false, "get user (use -id for user id)")
 		flag.BoolVar(&flgQueryDatabase, "query-db", false, "query database (use -id for database id)")
+		flag.BoolVar(&flgSearch, "search", false, "search")
 		flag.StringVar(&flgID, "id", "", "id of page or block (if not using default test pages)")
 		flag.StringVar(&flgAPIKey, "api-key", "", "api key for authentication (if not using default test page)")
 		flag.Parse()
@@ -77,6 +79,11 @@ func main() {
 
 	if flgQueryDatabase {
 		queryDatabase(flgAPIKey, flgID)
+		return
+	}
+
+	if flgSearch {
+		search(flgAPIKey)
 		return
 	}
 

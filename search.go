@@ -24,7 +24,8 @@ type SearchFilter struct {
 }
 
 type SearchResponse struct {
-	// Results are either pages or databases. See `SearchResponse.UnmarshalJSON`.
+	// Results are either *notion.Page or *notion.Database.
+	// See `SearchResponse.UnmarshalJSON`.
 	Results    SearchResults `json:"results"`
 	HasMore    bool          `json:"has_more"`
 	NextCursor string        `json:"next_cursor"`
@@ -32,6 +33,7 @@ type SearchResponse struct {
 	RawJSON []byte `json:"-"`
 }
 
+// interface{} is either *notion.Page or *notion.Database
 type SearchResults []interface{}
 
 func (sr *SearchResults) UnmarshalJSON(b []byte) error {
@@ -61,14 +63,14 @@ func (sr *SearchResults) UnmarshalJSON(b []byte) error {
 			if err != nil {
 				return err
 			}
-			results[i] = db
+			results[i] = &db
 		case "page":
 			var page Page
 			err := json.Unmarshal(rawResult, &page)
 			if err != nil {
 				return err
 			}
-			results[i] = page
+			results[i] = &page
 		default:
 			return fmt.Errorf("unsupported result object %q", obj.Object)
 		}
