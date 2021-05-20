@@ -75,6 +75,8 @@ type DatabaseQueryResponse struct {
 	Results    []Page `json:"results"`
 	HasMore    bool   `json:"has_more"`
 	NextCursor string `json:"next_cursor"`
+
+	RawJSON []byte `json:"-"`
 }
 
 // DatabaseQueryFilter is used to filter database contents.

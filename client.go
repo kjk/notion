@@ -101,35 +101,22 @@ func (c *Client) GetDatabase(ctx context.Context, id string) (*Database, error) 
 
 // QueryDatabase returns database contents, with optional filters, sorts and pagination.
 // See: https://developers.notion.com/reference/post-database-query
-func (c *Client) QueryDatabase(ctx context.Context, id string, query DatabaseQuery) (result DatabaseQueryResponse, err error) {
+func (c *Client) QueryDatabase(ctx context.Context, id string, query *DatabaseQuery) (*DatabaseQueryResponse, error) {
 	body := &bytes.Buffer{}
 
-	err = json.NewEncoder(body).Encode(query)
+	err := json.NewEncoder(body).Encode(query)
 	if err != nil {
-		return DatabaseQueryResponse{}, fmt.Errorf("notion: failed to encode filter to JSON: %w", err)
+		return nil, fmt.Errorf("notion: failed to encode filter to JSON: %w", err)
 	}
 
 	req, err := c.newRequest(ctx, http.MethodPost, fmt.Sprintf("/databases/%v/query", id), body)
 	if err != nil {
-		return DatabaseQueryResponse{}, fmt.Errorf("notion: invalid request: %w", err)
+		return nil, fmt.Errorf("notion: invalid request: %w", err)
 	}
 
-	resp, err := c.httpClient.Do(req)
-	if err != nil {
-		return DatabaseQueryResponse{}, fmt.Errorf("notion: failed to make HTTP request: %w", err)
-	}
-	defer resp.Body.Close()
-
-	if resp.StatusCode != http.StatusOK {
-		return DatabaseQueryResponse{}, fmt.Errorf("notion: failed to find database: %w", parseErrorResponse(resp))
-	}
-
-	err = json.NewDecoder(resp.Body).Decode(&result)
-	if err != nil {
-		return DatabaseQueryResponse{}, fmt.Errorf("notion: failed to parse HTTP response: %w", err)
-	}
-
-	return result, nil
+	var res DatabaseQueryResponse
+	res.RawJSON, err = c.doHTTPAndUnmarshalResponse(req, &res, "query database")
+	return &res, err
 }
 
 // GetPage fetches information about a page by ID
