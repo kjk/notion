@@ -71,29 +71,29 @@ func (c *Client) GetDatabase(ctx context.Context, id string) (*Database, error) 
 		return nil, fmt.Errorf("notion: invalid request: %w", err)
 	}
 
-	res, err := c.httpClient.Do(req)
+	resp, err := c.httpClient.Do(req)
 	if err != nil {
 		return nil, fmt.Errorf("notion: failed to make HTTP request: %w", err)
 	}
-	var db Database
+	var res Database
 
-	db.RawJSON, err = ioutil.ReadAll(res.Body)
-	res.Body.Close()
+	res.RawJSON, err = ioutil.ReadAll(resp.Body)
+	resp.Body.Close()
 
 	if err != nil {
-		return &db, err
+		return &res, err
 	}
 
-	if res.StatusCode != http.StatusOK {
-		return &db, fmt.Errorf("notion: failed to find database: %w", parseErrorResponseJSON(db.RawJSON))
+	if resp.StatusCode != http.StatusOK {
+		return &res, fmt.Errorf("notion: failed to find database: %w", parseErrorResponseJSON(res.RawJSON))
 	}
 
-	err = json.Unmarshal(db.RawJSON, &db)
+	err = json.Unmarshal(res.RawJSON, &res)
 	if err != nil {
-		return &db, fmt.Errorf("notion: failed to parse HTTP response: %w", err)
+		return &res, fmt.Errorf("notion: failed to parse HTTP response: %w", err)
 	}
 
-	return &db, nil
+	return &res, nil
 }
 
 // QueryDatabase returns database contents, with optional filters, sorts and pagination.
@@ -111,17 +111,17 @@ func (c *Client) QueryDatabase(ctx context.Context, id string, query DatabaseQue
 		return DatabaseQueryResponse{}, fmt.Errorf("notion: invalid request: %w", err)
 	}
 
-	res, err := c.httpClient.Do(req)
+	resp, err := c.httpClient.Do(req)
 	if err != nil {
 		return DatabaseQueryResponse{}, fmt.Errorf("notion: failed to make HTTP request: %w", err)
 	}
-	defer res.Body.Close()
+	defer resp.Body.Close()
 
-	if res.StatusCode != http.StatusOK {
-		return DatabaseQueryResponse{}, fmt.Errorf("notion: failed to find database: %w", parseErrorResponse(res))
+	if resp.StatusCode != http.StatusOK {
+		return DatabaseQueryResponse{}, fmt.Errorf("notion: failed to find database: %w", parseErrorResponse(resp))
 	}
 
-	err = json.NewDecoder(res.Body).Decode(&result)
+	err = json.NewDecoder(resp.Body).Decode(&result)
 	if err != nil {
 		return DatabaseQueryResponse{}, fmt.Errorf("notion: failed to parse HTTP response: %w", err)
 	}
@@ -132,34 +132,34 @@ func (c *Client) QueryDatabase(ctx context.Context, id string, query DatabaseQue
 // GetPage fetches information about a page by ID
 // See: https://developers.notion.com/reference/get-page
 func (c *Client) GetPage(ctx context.Context, id string) (*Page, error) {
-	var p Page
 	req, err := c.newRequest(ctx, http.MethodGet, "/pages/"+id, nil)
 	if err != nil {
-		return &p, fmt.Errorf("notion: invalid request: %w", err)
+		return nil, fmt.Errorf("notion: invalid request: %w", err)
 	}
 
-	res, err := c.httpClient.Do(req)
+	resp, err := c.httpClient.Do(req)
 	if err != nil {
 		return nil, fmt.Errorf("notion: failed to make HTTP request: %w", err)
 	}
 
-	p.RawJSON, err = ioutil.ReadAll(res.Body)
-	res.Body.Close()
+	var res Page
+	res.RawJSON, err = ioutil.ReadAll(resp.Body)
+	resp.Body.Close()
 
 	if err != nil {
-		return &p, err
+		return &res, err
 	}
 
-	if res.StatusCode != http.StatusOK {
-		return &p, fmt.Errorf("notion: failed to find page: %w", parseErrorResponseJSON(p.RawJSON))
+	if resp.StatusCode != http.StatusOK {
+		return &res, fmt.Errorf("notion: failed to find page: %w", parseErrorResponseJSON(res.RawJSON))
 	}
 
-	err = json.Unmarshal(p.RawJSON, &p)
+	err = json.Unmarshal(res.RawJSON, &res)
 	if err != nil {
-		return &p, fmt.Errorf("notion: failed to parse HTTP response: %w", err)
+		return &res, fmt.Errorf("notion: failed to parse HTTP response: %w", err)
 	}
 
-	return &p, nil
+	return &res, nil
 }
 
 // CreatePage creates a new page in the specified database or as a child of an existing page.
@@ -181,19 +181,19 @@ func (c *Client) CreatePage(ctx context.Context, params CreatePageParams) (page 
 		return Page{}, fmt.Errorf("notion: invalid request: %w", err)
 	}
 
-	res, err := c.httpClient.Do(req)
+	resp, err := c.httpClient.Do(req)
 	if err != nil {
 		return Page{}, fmt.Errorf("notion: failed to make HTTP request: %w", err)
 	}
 
-	page.RawJSON, err = ioutil.ReadAll(res.Body)
-	res.Body.Close()
+	page.RawJSON, err = ioutil.ReadAll(resp.Body)
+	resp.Body.Close()
 
 	if err != nil {
 		return page, err
 	}
 
-	if res.StatusCode != http.StatusOK {
+	if resp.StatusCode != http.StatusOK {
 		return page, fmt.Errorf("notion: failed to create page: %w", parseErrorResponseJSON(page.RawJSON))
 	}
 
@@ -224,17 +224,17 @@ func (c *Client) UpdatePageProps(ctx context.Context, pageID string, params Upda
 		return Page{}, fmt.Errorf("notion: invalid request: %w", err)
 	}
 
-	res, err := c.httpClient.Do(req)
+	resp, err := c.httpClient.Do(req)
 	if err != nil {
 		return Page{}, fmt.Errorf("notion: failed to make HTTP request: %w", err)
 	}
-	defer res.Body.Close()
+	defer resp.Body.Close()
 
-	if res.StatusCode != http.StatusOK {
-		return Page{}, fmt.Errorf("notion: failed to update page properties: %w", parseErrorResponse(res))
+	if resp.StatusCode != http.StatusOK {
+		return Page{}, fmt.Errorf("notion: failed to update page properties: %w", parseErrorResponse(resp))
 	}
 
-	err = json.NewDecoder(res.Body).Decode(&page)
+	err = json.NewDecoder(resp.Body).Decode(&page)
 	if err != nil {
 		return Page{}, fmt.Errorf("notion: failed to parse HTTP response: %w", err)
 	}
@@ -245,7 +245,6 @@ func (c *Client) UpdatePageProps(ctx context.Context, pageID string, params Upda
 // GetBlockChildren returns a list of block children for a given block ID.
 // See: https://developers.notion.com/reference/get-block-children
 func (c *Client) GetBlockChildren(ctx context.Context, blockID string, query *PaginationQuery) (*BlockChildrenResponse, error) {
-	var bcr BlockChildrenResponse
 	req, err := c.newRequest(ctx, http.MethodGet, fmt.Sprintf("/blocks/%v/children", blockID), nil)
 	if err != nil {
 		return nil, fmt.Errorf("notion: invalid request: %w", err)
@@ -262,28 +261,29 @@ func (c *Client) GetBlockChildren(ctx context.Context, blockID string, query *Pa
 		req.URL.RawQuery = q.Encode()
 	}
 
-	res, err := c.httpClient.Do(req)
+	resp, err := c.httpClient.Do(req)
 	if err != nil {
 		return nil, fmt.Errorf("notion: failed to make HTTP request: %w", err)
 	}
 
-	bcr.RawJSON, err = ioutil.ReadAll(res.Body)
-	res.Body.Close()
+	var res BlockChildrenResponse
+	res.RawJSON, err = ioutil.ReadAll(resp.Body)
+	resp.Body.Close()
 
 	if err != nil {
-		return &bcr, err
+		return &res, err
 	}
 
-	if res.StatusCode != http.StatusOK {
-		return &bcr, fmt.Errorf("notion: failed to find block children: %w", parseErrorResponseJSON(bcr.RawJSON))
+	if resp.StatusCode != http.StatusOK {
+		return &res, fmt.Errorf("notion: failed to find block children: %w", parseErrorResponseJSON(res.RawJSON))
 	}
 
-	err = json.Unmarshal(bcr.RawJSON, &bcr)
+	err = json.Unmarshal(res.RawJSON, &res)
 	if err != nil {
-		return &bcr, fmt.Errorf("notion: failed to parse HTTP response: %w", err)
+		return &res, fmt.Errorf("notion: failed to parse HTTP response: %w", err)
 	}
 
-	return &bcr, nil
+	return &res, nil
 }
 
 // AppendBlockChildren appends child content (blocks) to an existing block.
@@ -306,17 +306,17 @@ func (c *Client) AppendBlockChildren(ctx context.Context, blockID string, childr
 		return Block{}, fmt.Errorf("notion: invalid request: %w", err)
 	}
 
-	res, err := c.httpClient.Do(req)
+	resp, err := c.httpClient.Do(req)
 	if err != nil {
 		return Block{}, fmt.Errorf("notion: failed to make HTTP request: %w", err)
 	}
-	defer res.Body.Close()
+	defer resp.Body.Close()
 
-	if res.StatusCode != http.StatusOK {
-		return Block{}, fmt.Errorf("notion: failed to append block children: %w", parseErrorResponse(res))
+	if resp.StatusCode != http.StatusOK {
+		return Block{}, fmt.Errorf("notion: failed to append block children: %w", parseErrorResponse(resp))
 	}
 
-	err = json.NewDecoder(res.Body).Decode(&block)
+	err = json.NewDecoder(resp.Body).Decode(&block)
 	if err != nil {
 		return Block{}, fmt.Errorf("notion: failed to parse HTTP response: %w", err)
 	}
@@ -332,17 +332,17 @@ func (c *Client) FindUserByID(ctx context.Context, id string) (user User, err er
 		return User{}, fmt.Errorf("notion: invalid request: %w", err)
 	}
 
-	res, err := c.httpClient.Do(req)
+	resp, err := c.httpClient.Do(req)
 	if err != nil {
 		return User{}, fmt.Errorf("notion: failed to make HTTP request: %w", err)
 	}
-	defer res.Body.Close()
+	defer resp.Body.Close()
 
-	if res.StatusCode != http.StatusOK {
-		return User{}, fmt.Errorf("notion: failed to find user: %w", parseErrorResponse(res))
+	if resp.StatusCode != http.StatusOK {
+		return User{}, fmt.Errorf("notion: failed to find user: %w", parseErrorResponse(resp))
 	}
 
-	err = json.NewDecoder(res.Body).Decode(&user)
+	err = json.NewDecoder(resp.Body).Decode(&user)
 	if err != nil {
 		return User{}, fmt.Errorf("notion: failed to parse HTTP response: %w", err)
 	}
@@ -352,10 +352,10 @@ func (c *Client) FindUserByID(ctx context.Context, id string) (user User, err er
 
 // ListUsers returns a list of all users, and pagination metadata.
 // See: https://developers.notion.com/reference/get-users
-func (c *Client) ListUsers(ctx context.Context, query *PaginationQuery) (result ListUsersResponse, err error) {
+func (c *Client) ListUsers(ctx context.Context, query *PaginationQuery) (*ListUsersResponse, error) {
 	req, err := c.newRequest(ctx, http.MethodGet, "/users", nil)
 	if err != nil {
-		return ListUsersResponse{}, fmt.Errorf("notion: invalid request: %w", err)
+		return nil, fmt.Errorf("notion: invalid request: %w", err)
 	}
 
 	if query != nil {
@@ -363,28 +363,40 @@ func (c *Client) ListUsers(ctx context.Context, query *PaginationQuery) (result 
 		if query.StartCursor != "" {
 			q.Set("start_cursor", query.StartCursor)
 		}
-		if query.PageSize != 0 {
-			q.Set("page_size", strconv.Itoa(query.PageSize))
+		pageSize := query.PageSize
+		if pageSize > 0 {
+			// limit to max allowed
+			if pageSize > 100 {
+				pageSize = 100
+			}
+			q.Set("page_size", strconv.Itoa(pageSize))
 		}
 		req.URL.RawQuery = q.Encode()
 	}
 
-	res, err := c.httpClient.Do(req)
+	resp, err := c.httpClient.Do(req)
 	if err != nil {
-		return ListUsersResponse{}, fmt.Errorf("notion: failed to make HTTP request: %w", err)
-	}
-	defer res.Body.Close()
-
-	if res.StatusCode != http.StatusOK {
-		return ListUsersResponse{}, fmt.Errorf("notion: failed to list users: %w", parseErrorResponse(res))
+		return nil, fmt.Errorf("notion: failed to make HTTP request: %w", err)
 	}
 
-	err = json.NewDecoder(res.Body).Decode(&result)
+	var res ListUsersResponse
+	res.RawJSON, err = ioutil.ReadAll(resp.Body)
+	resp.Body.Close()
+
 	if err != nil {
-		return ListUsersResponse{}, fmt.Errorf("notion: failed to parse HTTP response: %w", err)
+		return &res, err
 	}
 
-	return result, nil
+	if resp.StatusCode != http.StatusOK {
+		return &res, fmt.Errorf("notion: failed to list users: %w", parseErrorResponseJSON(res.RawJSON))
+	}
+
+	err = json.Unmarshal(res.RawJSON, &res)
+	if err != nil {
+		return &res, fmt.Errorf("notion: failed to parse HTTP response: %w", err)
+	}
+
+	return &res, nil
 }
 
 // Search fetches all pages and child pages that are shared with the integration. Optionally uses query, filter and
@@ -405,17 +417,17 @@ func (c *Client) Search(ctx context.Context, opts *SearchOpts) (result SearchRes
 		return SearchResponse{}, fmt.Errorf("notion: invalid request: %w", err)
 	}
 
-	res, err := c.httpClient.Do(req)
+	resp, err := c.httpClient.Do(req)
 	if err != nil {
 		return SearchResponse{}, fmt.Errorf("notion: failed to make HTTP request: %w", err)
 	}
-	defer res.Body.Close()
+	defer resp.Body.Close()
 
-	if res.StatusCode != http.StatusOK {
-		return SearchResponse{}, fmt.Errorf("notion: failed to search: %w", parseErrorResponse(res))
+	if resp.StatusCode != http.StatusOK {
+		return SearchResponse{}, fmt.Errorf("notion: failed to search: %w", parseErrorResponse(resp))
 	}
 
-	err = json.NewDecoder(res.Body).Decode(&result)
+	err = json.NewDecoder(resp.Body).Decode(&result)
 	if err != nil {
 		return SearchResponse{}, fmt.Errorf("notion: failed to parse HTTP response: %w", err)
 	}
