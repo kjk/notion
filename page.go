@@ -138,9 +138,9 @@ func (p CreatePageParams) MarshalJSON() ([]byte, error) {
 	var parent PageParent
 
 	if p.DatabasePageProperties != nil {
-		parent.DatabaseID = StringPtr(p.ParentID)
+		parent.DatabaseID = &p.ParentID
 	} else if p.Title != nil {
-		parent.PageID = StringPtr(p.ParentID)
+		parent.PageID = &p.ParentID
 	}
 
 	dto := CreatePageParamsDTO{
