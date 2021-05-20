@@ -26,7 +26,7 @@ type Page struct {
 }
 
 type PageParent struct {
-	Type string `json:"type"`
+	Type ParentType `json:"type"`
 
 	PageID     *string `json:"page_id,omitempty"`
 	DatabaseID *string `json:"database_id,omitempty"`
@@ -48,10 +48,12 @@ type DatabasePageProperty struct {
 	ID   string               `json:"id,omitempty"`
 	Type DatabasePropertyType `json:"type"`
 
+	Title       []RichText        `json:"title,omitempty"`
 	RichText    []RichText        `json:"rich_text,omitempty"`
 	Number      float64           `json:"number,omitempty"`
 	Select      *SelectOptions    `json:"select,omitempty"`
 	MultiSelect []SelectOptions   `json:"multi_select,omitempty"`
+	Date        *Date             `json:"date,omitempty"`
 	Formula     *FormulaMetadata  `json:"formula,omitempty"`
 	Relation    *RelationMetadata `json:"relation,omitempty"`
 	Rollup      *RollupMetadata   `json:"rollup,omitempty"`
