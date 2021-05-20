@@ -62,7 +62,30 @@ func (c *Client) newRequest(ctx context.Context, method, url string, body io.Rea
 	return req, nil
 }
 
-// GetDatabase fetches a database by ID.
+func (c *Client) doHTTPAndUnmarshalResponse(req *http.Request, val interface{}, op string) ([]byte, error) {
+	resp, err := c.httpClient.Do(req)
+	if err != nil {
+		return nil, fmt.Errorf("notion: failed to make HTTP request: %w", err)
+	}
+
+	d, err := ioutil.ReadAll(resp.Body)
+	resp.Body.Close()
+	if err != nil {
+		return d, err
+	}
+
+	if resp.StatusCode != http.StatusOK {
+		return d, fmt.Errorf("notion: failed to '%s': %w", op, parseErrorResponseJSON(d))
+	}
+
+	err = json.Unmarshal(d, val)
+	if err != nil {
+		return d, fmt.Errorf("notion: failed to parse HTTP response: %w", err)
+	}
+	return d, nil
+}
+
+// GetDatabase fetches information about a database given its ID.
 // See: https://developers.notion.com/reference/get-database
 func (c *Client) GetDatabase(ctx context.Context, id string) (*Database, error) {
 
@@ -71,29 +94,9 @@ func (c *Client) GetDatabase(ctx context.Context, id string) (*Database, error) 
 		return nil, fmt.Errorf("notion: invalid request: %w", err)
 	}
 
-	resp, err := c.httpClient.Do(req)
-	if err != nil {
-		return nil, fmt.Errorf("notion: failed to make HTTP request: %w", err)
-	}
 	var res Database
-
-	res.RawJSON, err = ioutil.ReadAll(resp.Body)
-	resp.Body.Close()
-
-	if err != nil {
-		return &res, err
-	}
-
-	if resp.StatusCode != http.StatusOK {
-		return &res, fmt.Errorf("notion: failed to find database: %w", parseErrorResponseJSON(res.RawJSON))
-	}
-
-	err = json.Unmarshal(res.RawJSON, &res)
-	if err != nil {
-		return &res, fmt.Errorf("notion: failed to parse HTTP response: %w", err)
-	}
-
-	return &res, nil
+	res.RawJSON, err = c.doHTTPAndUnmarshalResponse(req, &res, "find database")
+	return &res, err
 }
 
 // QueryDatabase returns database contents, with optional filters, sorts and pagination.
