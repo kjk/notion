@@ -28,6 +28,8 @@ type SearchResponse struct {
 	Results    SearchResults `json:"results"`
 	HasMore    bool          `json:"has_more"`
 	NextCursor string        `json:"next_cursor"`
+
+	RawJSON []byte `json:"-"`
 }
 
 type SearchResults []interface{}

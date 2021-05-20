@@ -45,6 +45,16 @@ func NewClient(apiKey string, opts *ClientOptions) *Client {
 	return c
 }
 
+func (c *Client) newRequestJSON(ctx context.Context, method, url string, params interface{}) (*http.Request, error) {
+	body := &bytes.Buffer{}
+
+	err := json.NewEncoder(body).Encode(params)
+	if err != nil {
+		return nil, fmt.Errorf("notion: failed to encode body params to JSON: %w", err)
+	}
+	return c.newRequest(ctx, method, url, body)
+}
+
 func (c *Client) newRequest(ctx context.Context, method, url string, body io.Reader) (*http.Request, error) {
 	req, err := http.NewRequestWithContext(ctx, method, baseURL+url, body)
 	if err != nil {
@@ -103,14 +113,8 @@ func (c *Client) GetDatabase(ctx context.Context, id string) (*Database, error) 
 // QueryDatabase returns database contents, with optional filters, sorts and pagination.
 // See: https://developers.notion.com/reference/post-database-query
 func (c *Client) QueryDatabase(ctx context.Context, id string, query DatabaseQuery) (*DatabaseQueryResponse, error) {
-	body := &bytes.Buffer{}
-	err := json.NewEncoder(body).Encode(query)
-	if err != nil {
-		return nil, fmt.Errorf("notion: failed to encode filter to JSON: %w", err)
-	}
-
 	uri := "/databases/" + id + "/query"
-	req, err := c.newRequest(ctx, http.MethodPost, uri, body)
+	req, err := c.newRequestJSON(ctx, http.MethodPost, uri, query)
 	if err != nil {
 		return nil, fmt.Errorf("notion: invalid request: %w", err)
 	}
@@ -141,15 +145,8 @@ func (c *Client) CreatePage(ctx context.Context, params CreatePageParams) (*Page
 		return nil, fmt.Errorf("notion: invalid page params: %w", err)
 	}
 
-	body := &bytes.Buffer{}
-
-	err := json.NewEncoder(body).Encode(params)
-	if err != nil {
-		return nil, fmt.Errorf("notion: failed to encode body params to JSON: %w", err)
-	}
-
 	uri := "/pages"
-	req, err := c.newRequest(ctx, http.MethodPost, uri, body)
+	req, err := c.newRequestJSON(ctx, http.MethodPost, uri, params)
 	if err != nil {
 		return nil, fmt.Errorf("notion: invalid request: %w", err)
 	}
@@ -166,15 +163,8 @@ func (c *Client) UpdatePageProps(ctx context.Context, pageID string, params Upda
 		return nil, fmt.Errorf("notion: invalid page params: %w", err)
 	}
 
-	body := &bytes.Buffer{}
-
-	err := json.NewEncoder(body).Encode(params)
-	if err != nil {
-		return nil, fmt.Errorf("notion: failed to encode body params to JSON: %w", err)
-	}
-
 	uri := "/pages/" + pageID
-	req, err := c.newRequest(ctx, http.MethodPatch, uri, body)
+	req, err := c.newRequestJSON(ctx, http.MethodPatch, uri, params)
 	if err != nil {
 		return nil, fmt.Errorf("notion: invalid request: %w", err)
 	}
@@ -215,21 +205,12 @@ func (c *Client) AppendBlockChildren(ctx context.Context, blockID string, childr
 	type PostBody struct {
 		Children []Block `json:"children"`
 	}
-
 	dto := PostBody{children}
-	body := &bytes.Buffer{}
-
-	err := json.NewEncoder(body).Encode(dto)
-	if err != nil {
-		return nil, fmt.Errorf("notion: failed to encode body params to JSON: %w", err)
-	}
-
 	uri := "/blocks/" + blockID + "/children"
-	req, err := c.newRequest(ctx, http.MethodPatch, uri, body)
+	req, err := c.newRequestJSON(ctx, http.MethodPatch, uri, dto)
 	if err != nil {
 		return nil, fmt.Errorf("notion: invalid request: %w", err)
 	}
-
 	var res Block
 	res.RawJSON, err = c.doHTTPAndUnmarshalResponse(req, &res, "append block children")
 	return &res, err
@@ -276,64 +257,31 @@ func (c *Client) ListUsers(ctx context.Context, query *PaginationQuery) (*ListUs
 		req.URL.RawQuery = q.Encode()
 	}
 
-	resp, err := c.httpClient.Do(req)
-	if err != nil {
-		return nil, fmt.Errorf("notion: failed to make HTTP request: %w", err)
-	}
-
 	var res ListUsersResponse
-	res.RawJSON, err = ioutil.ReadAll(resp.Body)
-	resp.Body.Close()
-
-	if err != nil {
-		return &res, err
-	}
-
-	if resp.StatusCode != http.StatusOK {
-		return &res, fmt.Errorf("notion: failed to list users: %w", parseErrorResponseJSON(res.RawJSON))
-	}
-
-	err = json.Unmarshal(res.RawJSON, &res)
-	if err != nil {
-		return &res, fmt.Errorf("notion: failed to parse HTTP response: %w", err)
-	}
-
-	return &res, nil
+	res.RawJSON, err = c.doHTTPAndUnmarshalResponse(req, &res, "list users")
+	return &res, err
 }
 
 // Search fetches all pages and child pages that are shared with the integration. Optionally uses query, filter and
 // pagination options.
 // See: https://developers.notion.com/reference/post-search
-func (c *Client) Search(ctx context.Context, opts *SearchOpts) (result SearchResponse, err error) {
+func (c *Client) Search(ctx context.Context, opts *SearchOpts) (*SearchResponse, error) {
 	body := &bytes.Buffer{}
 
+	var err error
 	if opts != nil {
 		err = json.NewEncoder(body).Encode(opts)
 		if err != nil {
-			return SearchResponse{}, fmt.Errorf("notion: failed to encode filter to JSON: %w", err)
+			return nil, fmt.Errorf("notion: failed to encode filter to JSON: %w", err)
 		}
 	}
 
 	uri := "/search"
 	req, err := c.newRequest(ctx, http.MethodPost, uri, body)
 	if err != nil {
-		return SearchResponse{}, fmt.Errorf("notion: invalid request: %w", err)
+		return nil, fmt.Errorf("notion: invalid request: %w", err)
 	}
-
-	resp, err := c.httpClient.Do(req)
-	if err != nil {
-		return SearchResponse{}, fmt.Errorf("notion: failed to make HTTP request: %w", err)
-	}
-	defer resp.Body.Close()
-
-	if resp.StatusCode != http.StatusOK {
-		return SearchResponse{}, fmt.Errorf("notion: failed to search: %w", parseErrorResponse(resp))
-	}
-
-	err = json.NewDecoder(resp.Body).Decode(&result)
-	if err != nil {
-		return SearchResponse{}, fmt.Errorf("notion: failed to parse HTTP response: %w", err)
-	}
-
-	return result, nil
+	var res SearchResponse
+	res.RawJSON, err = c.doHTTPAndUnmarshalResponse(req, &res, "search")
+	return &res, err
 }
