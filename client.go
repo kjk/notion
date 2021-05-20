@@ -9,6 +9,7 @@ import (
 	"io/ioutil"
 	"net/http"
 	"net/url"
+	"reflect"
 	"strconv"
 )
 
@@ -45,9 +46,19 @@ func NewClient(apiKey string, opts *ClientOptions) *Client {
 	return c
 }
 
-func (c *Client) newRequestJSON(ctx context.Context, method, url string, params interface{}) (*http.Request, error) {
-	body := &bytes.Buffer{}
+func isNil(v interface{}) bool {
+	if v == nil {
+		return true
+	}
+	return reflect.ValueOf(v).Kind() == reflect.Ptr && reflect.ValueOf(v).IsNil()
+}
 
+func (c *Client) newRequestJSON(ctx context.Context, method, url string, params interface{}) (*http.Request, error) {
+	if isNil(params) {
+		return c.newRequest(ctx, method, url, nil)
+	}
+
+	body := &bytes.Buffer{}
 	err := json.NewEncoder(body).Encode(params)
 	if err != nil {
 		return nil, fmt.Errorf("notion: failed to encode body params to JSON: %w", err)
@@ -112,7 +123,7 @@ func (c *Client) GetDatabase(ctx context.Context, id string) (*Database, error) 
 
 // QueryDatabase returns database contents, with optional filters, sorts and pagination.
 // See: https://developers.notion.com/reference/post-database-query
-func (c *Client) QueryDatabase(ctx context.Context, id string, query DatabaseQuery) (*DatabaseQueryResponse, error) {
+func (c *Client) QueryDatabase(ctx context.Context, id string, query *DatabaseQuery) (*DatabaseQueryResponse, error) {
 	uri := "/databases/" + id + "/query"
 	req, err := c.newRequestJSON(ctx, http.MethodPost, uri, query)
 	if err != nil {

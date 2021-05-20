@@ -7,9 +7,16 @@
     {
       "type": "go",
       "request": "launch",
-      "program": "${workspaceFolder}\\examples",
+      "program": "${workspaceFolder}/examples",
       "name": "Launch examples -get-page-info",
       "args": ["-get-page-info"],
+    },
+    {
+      "type": "go",
+      "request": "launch",
+      "program": "${workspaceFolder}/examples",
+      "name": "Launch examples -query-db",
+      "args": ["-query-db"],
     }
   ]
 }

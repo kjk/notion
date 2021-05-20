@@ -26,7 +26,7 @@ type Page struct {
 }
 
 type PageParent struct {
-	Type ParentType `json:"type"`
+	Type ParentType `json:"type,omitempty"`
 
 	PageID     *string `json:"page_id,omitempty"`
 	DatabaseID *string `json:"database_id,omitempty"`
@@ -115,10 +115,8 @@ func (p CreatePageParams) MarshalJSON() ([]byte, error) {
 	var parent PageParent
 
 	if p.DatabasePageProperties != nil {
-		parent.Type = "database_id"
 		parent.DatabaseID = StringPtr(p.ParentID)
 	} else if p.Title != nil {
-		parent.Type = "page_id"
 		parent.PageID = StringPtr(p.ParentID)
 	}
 

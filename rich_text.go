@@ -3,7 +3,7 @@ package notion
 import "time"
 
 type RichText struct {
-	Type        RichTextType `json:"type"`
+	Type        RichTextType `json:"type,omitempty"`
 	Annotations *Annotations `json:"annotations,omitempty"`
 
 	PlainText string    `json:"plain_text,omitempty"`
