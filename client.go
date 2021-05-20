@@ -76,7 +76,7 @@ func (c *Client) newRequest(ctx context.Context, method, url string, body io.Rea
 	req.Header.Set("Notion-Version", apiVersion)
 	req.Header.Set("User-Agent", "go-notion/"+clientVersion)
 
-	if method == http.MethodPost || method == http.MethodPatch {
+	if body != nil {
 		req.Header.Set("Content-Type", "application/json")
 	}
 
@@ -277,18 +277,8 @@ func (c *Client) ListUsers(ctx context.Context, query *PaginationQuery) (*ListUs
 // pagination options.
 // See: https://developers.notion.com/reference/post-search
 func (c *Client) Search(ctx context.Context, opts *SearchOpts) (*SearchResponse, error) {
-	body := &bytes.Buffer{}
-
-	var err error
-	if opts != nil {
-		err = json.NewEncoder(body).Encode(opts)
-		if err != nil {
-			return nil, fmt.Errorf("notion: failed to encode filter to JSON: %w", err)
-		}
-	}
-
 	uri := "/search"
-	req, err := c.newRequest(ctx, http.MethodPost, uri, body)
+	req, err := c.newRequestJSON(ctx, http.MethodPost, uri, opts)
 	if err != nil {
 		return nil, fmt.Errorf("notion: invalid request: %w", err)
 	}

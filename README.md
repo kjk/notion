@@ -6,7 +6,7 @@
 [![Go Report Card](https://goreportcard.com/badge/github.com/kjk/notion)](https://goreportcard.com/report/github.com/kjk/notion)
 
 **notion** is a Go client for the
- [Notion API](https://developers.notion.com/reference). Based on https://github.com/dstotijn/go-notion
+ [Notion API](https://developers.notion.com/reference). Based on https://github.com/dstotijn/go-notion (as of https://github.com/dstotijn/go-notion/commit/55aa9db5c7a72af2a57ac953ebbbdbdec3e1efa1, May 19 2021)
 
 ## Features
 
@@ -66,6 +66,9 @@ The Notion API is currently in _public beta_.
 
 ⚠️ Although the API itself is versioned, this client **will** make breaking
 changes in its code until `v1.0` of the module is released.
+
+Official API is limited. For more functionality use unofficial API client
+https://github.com/kjk/notionapi
 
 ### To do
 
