@@ -13,26 +13,20 @@
 The client supports all (non-deprecated) endpoints available in the Notion API,
 as of May 15, 2021:
 
-- [x] [Retrieve a database](https://pkg.go.dev/github.com/kjk/notion#Client.GetDatabase)
-- [x] [Query a database](https://pkg.go.dev/github.com/kjk/notion#Client.QueryDatabase)
-- [x] [Retrieve a page](https://pkg.go.dev/github.com/kjk/notion#Client.GetPage)
-- [x] [Create a page](https://pkg.go.dev/github.com/kjk/notion#Client.CreatePage)
+- [x] [Get database info](https://pkg.go.dev/github.com/kjk/notion#Client.GetDatabase), [example](https://github.com/kjk/notion/blob/master/examples/get_database_info.go)
+- [x] [Query a database](https://pkg.go.dev/github.com/kjk/notion#Client.QueryDatabase), [example](https://github.com/kjk/notion/blob/master/examples/query_database.go)
+- [x] [Retrieve page info](https://pkg.go.dev/github.com/kjk/notion#Client.GetPage). [example](https://github.com/kjk/notion/blob/master/examples/get_page_info.go)
+- [x] [Retrieve children of a block](https://pkg.go.dev/github.com/kjk/notion#Client.GetBlockChildren), [example](https://github.com/kjk/notion/blob/master/examples/get_block_children.go)
+- [x] [Create a page](https://pkg.go.dev/github.com/kjk/notion#Client.CreatePage), [example](https://github.com/kjk/notion/blob/master/examples/create_page.go)
 - [x] [Update page properties](https://pkg.go.dev/github.com/kjk/notion#Client.UpdatePageProps)
-- [x] [Retrieve block children](https://pkg.go.dev/github.com/kjk/notion#Client.GetBlockChildren)
 - [x] [Append block children](https://pkg.go.dev/github.com/kjk/notion#Client.AppendBlockChildren)
-- [x] [Retrieve a user](https://pkg.go.dev/github.com/kjk/notion#Client.GetUser)
-- [x] [List all users](https://pkg.go.dev/github.com/kjk/notion#Client.ListUsers)
-- [x] [Search](https://pkg.go.dev/github.com/kjk/notion#Client.Search)
-
-## Installation
-
-```sh
-$ go get github.com/kjk/notion
-```
+- [x] [Get user info](https://pkg.go.dev/github.com/kjk/notion#Client.GetUser), [example](https://github.com/kjk/notion/blob/master/examples/get_user.go)
+- [x] [List all users](https://pkg.go.dev/github.com/kjk/notion#Client.ListUsers), [example](https://github.com/kjk/notion/blob/master/examples/list_users.go)
+- [x] [Search](https://pkg.go.dev/github.com/kjk/notion#Client.Search), [example](https://github.com/kjk/notion/blob/master/examples/search.go)
 
 ## Getting started
 
-To obtain an API key, follow Notion’s [getting started guide](https://developers.notion.com/docs/getting-started).
+To obtain an API key (required for API calls), follow Notion’s [getting started guide](https://developers.notion.com/docs/getting-started).
 
 ### Code example
 
@@ -67,13 +61,16 @@ The Notion API is currently in _public beta_.
 ⚠️ Although the API itself is versioned, this client **will** make breaking
 changes in its code until `v1.0` of the module is released.
 
-Official API is limited. For more functionality use unofficial API client
+Official Notion API is still limited:
+* not all block types are supported
+* no way to avoid re-downloading data we already have
+
+For more functionality use unofficial API client
 https://github.com/kjk/notionapi
 
 ### To do
 
 - [ ] Write tests
-- [ ] Provide examples
 
 ## License
 
