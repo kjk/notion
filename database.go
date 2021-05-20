@@ -72,9 +72,9 @@ type DatabaseQuery struct {
 
 // DatabaseQueryResponse contains the results and pagination data from a query request.
 type DatabaseQueryResponse struct {
-	Results    []Page  `json:"results"`
-	HasMore    bool    `json:"has_more"`
-	NextCursor *string `json:"next_cursor"`
+	Results    []Page `json:"results"`
+	HasMore    bool   `json:"has_more"`
+	NextCursor string `json:"next_cursor"`
 }
 
 // DatabaseQueryFilter is used to filter database contents.

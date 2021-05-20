@@ -33,6 +33,10 @@ func showBlock(b *notion.Block) {
 
 func showBlockChildren(bcr *notion.BlockChildrenResponse) {
 	logf("showBlockChildren:\n")
+	logf("  hasMore: %v\n", bcr.HasMore)
+	if bcr.NextCursor != "" {
+		logf("  nextCursor: %v\n", bcr.NextCursor)
+	}
 	logf("  %d children:\n", len(bcr.Results))
 	for _, b := range bcr.Results {
 		showBlock(&b)

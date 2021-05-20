@@ -27,7 +27,7 @@ type SearchResponse struct {
 	// Results are either pages or databases. See `SearchResponse.UnmarshalJSON`.
 	Results    SearchResults `json:"results"`
 	HasMore    bool          `json:"has_more"`
-	NextCursor *string       `json:"next_cursor"`
+	NextCursor string        `json:"next_cursor"`
 }
 
 type SearchResults []interface{}
