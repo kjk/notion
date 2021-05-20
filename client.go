@@ -295,29 +295,9 @@ func (c *Client) GetUser(ctx context.Context, id string) (*User, error) {
 		return nil, fmt.Errorf("notion: invalid request: %w", err)
 	}
 
-	resp, err := c.httpClient.Do(req)
-	if err != nil {
-		return nil, fmt.Errorf("notion: failed to make HTTP request: %w", err)
-	}
-
 	var res User
-	res.RawJSON, err = ioutil.ReadAll(resp.Body)
-	resp.Body.Close()
-
-	if err != nil {
-		return &res, err
-	}
-
-	if resp.StatusCode != http.StatusOK {
-		return &res, fmt.Errorf("notion: failed to find user: %w", parseErrorResponseJSON(res.RawJSON))
-	}
-
-	err = json.Unmarshal(res.RawJSON, &res)
-	if err != nil {
-		return &res, fmt.Errorf("notion: failed to parse HTTP response: %w", err)
-	}
-
-	return &res, nil
+	res.RawJSON, err = c.doHTTPAndUnmarshalResponse(req, &res, "find user")
+	return &res, err
 }
 
 // ListUsers returns a list of all users, and pagination metadata.
