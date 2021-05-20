@@ -77,19 +77,18 @@ func (c *Client) GetDatabase(ctx context.Context, id string) (*Database, error) 
 	}
 	var db Database
 
-	d, err := ioutil.ReadAll(res.Body)
+	db.RawJSON, err = ioutil.ReadAll(res.Body)
 	res.Body.Close()
-	db.RawJSON = d
-
-	if res.StatusCode != http.StatusOK {
-		return nil, fmt.Errorf("notion: failed to find database: %w", parseErrorResponseJSON(d))
-	}
 
 	if err != nil {
 		return &db, err
 	}
 
-	err = json.Unmarshal(d, &db)
+	if res.StatusCode != http.StatusOK {
+		return &db, fmt.Errorf("notion: failed to find database: %w", parseErrorResponseJSON(db.RawJSON))
+	}
+
+	err = json.Unmarshal(db.RawJSON, &db)
 	if err != nil {
 		return &db, fmt.Errorf("notion: failed to parse HTTP response: %w", err)
 	}
@@ -144,20 +143,18 @@ func (c *Client) GetPage(ctx context.Context, id string) (*Page, error) {
 		return nil, fmt.Errorf("notion: failed to make HTTP request: %w", err)
 	}
 
-	d, err := ioutil.ReadAll(res.Body)
+	p.RawJSON, err = ioutil.ReadAll(res.Body)
 	res.Body.Close()
-	p.RawJSON = d
-
-	if res.StatusCode != http.StatusOK {
-		return &p, fmt.Errorf("notion: failed to find page: %w", parseErrorResponseJSON(d))
-	}
 
 	if err != nil {
 		return &p, err
 	}
 
-	err = json.Unmarshal(d, &p)
-	p.RawJSON = d
+	if res.StatusCode != http.StatusOK {
+		return &p, fmt.Errorf("notion: failed to find page: %w", parseErrorResponseJSON(p.RawJSON))
+	}
+
+	err = json.Unmarshal(p.RawJSON, &p)
 	if err != nil {
 		return &p, fmt.Errorf("notion: failed to parse HTTP response: %w", err)
 	}
@@ -189,19 +186,18 @@ func (c *Client) CreatePage(ctx context.Context, params CreatePageParams) (page 
 		return Page{}, fmt.Errorf("notion: failed to make HTTP request: %w", err)
 	}
 
-	d, err := ioutil.ReadAll(res.Body)
+	page.RawJSON, err = ioutil.ReadAll(res.Body)
 	res.Body.Close()
-	page.RawJSON = d
-
-	if res.StatusCode != http.StatusOK {
-		return page, fmt.Errorf("notion: failed to create page: %w", parseErrorResponseJSON(d))
-	}
 
 	if err != nil {
 		return page, err
 	}
 
-	err = json.Unmarshal(d, &page)
+	if res.StatusCode != http.StatusOK {
+		return page, fmt.Errorf("notion: failed to create page: %w", parseErrorResponseJSON(page.RawJSON))
+	}
+
+	err = json.Unmarshal(page.RawJSON, &page)
 	if err != nil {
 		return page, fmt.Errorf("notion: failed to parse HTTP response: %w", err)
 	}
@@ -271,19 +267,18 @@ func (c *Client) GetBlockChildren(ctx context.Context, blockID string, query *Pa
 		return nil, fmt.Errorf("notion: failed to make HTTP request: %w", err)
 	}
 
-	d, err := ioutil.ReadAll(res.Body)
+	bcr.RawJSON, err = ioutil.ReadAll(res.Body)
 	res.Body.Close()
-	bcr.RawJSON = d
 
 	if err != nil {
 		return &bcr, err
 	}
 
 	if res.StatusCode != http.StatusOK {
-		return &bcr, fmt.Errorf("notion: failed to find block children: %w", parseErrorResponseJSON(d))
+		return &bcr, fmt.Errorf("notion: failed to find block children: %w", parseErrorResponseJSON(bcr.RawJSON))
 	}
 
-	err = json.Unmarshal(d, &bcr)
+	err = json.Unmarshal(bcr.RawJSON, &bcr)
 	if err != nil {
 		return &bcr, fmt.Errorf("notion: failed to parse HTTP response: %w", err)
 	}
