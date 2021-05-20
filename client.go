@@ -161,40 +161,27 @@ func (c *Client) CreatePage(ctx context.Context, params CreatePageParams) (*Page
 
 // UpdatePageProps updates page property values for a page.
 // See: https://developers.notion.com/reference/patch-page
-func (c *Client) UpdatePageProps(ctx context.Context, pageID string, params UpdatePageParams) (page Page, err error) {
+func (c *Client) UpdatePageProps(ctx context.Context, pageID string, params UpdatePageParams) (*Page, error) {
 	if err := params.Validate(); err != nil {
-		return Page{}, fmt.Errorf("notion: invalid page params: %w", err)
+		return nil, fmt.Errorf("notion: invalid page params: %w", err)
 	}
 
 	body := &bytes.Buffer{}
 
-	err = json.NewEncoder(body).Encode(params)
+	err := json.NewEncoder(body).Encode(params)
 	if err != nil {
-		return Page{}, fmt.Errorf("notion: failed to encode body params to JSON: %w", err)
+		return nil, fmt.Errorf("notion: failed to encode body params to JSON: %w", err)
 	}
 
 	uri := "/pages/" + pageID
 	req, err := c.newRequest(ctx, http.MethodPatch, uri, body)
 	if err != nil {
-		return Page{}, fmt.Errorf("notion: invalid request: %w", err)
+		return nil, fmt.Errorf("notion: invalid request: %w", err)
 	}
 
-	resp, err := c.httpClient.Do(req)
-	if err != nil {
-		return Page{}, fmt.Errorf("notion: failed to make HTTP request: %w", err)
-	}
-	defer resp.Body.Close()
-
-	if resp.StatusCode != http.StatusOK {
-		return Page{}, fmt.Errorf("notion: failed to update page properties: %w", parseErrorResponse(resp))
-	}
-
-	err = json.NewDecoder(resp.Body).Decode(&page)
-	if err != nil {
-		return Page{}, fmt.Errorf("notion: failed to parse HTTP response: %w", err)
-	}
-
-	return page, nil
+	var res Page
+	res.RawJSON, err = c.doHTTPAndUnmarshalResponse(req, &res, "update page properties")
+	return &res, err
 }
 
 // GetBlockChildren returns a list of block children for a given block ID.
