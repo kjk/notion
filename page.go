@@ -41,6 +41,29 @@ type PageTitle struct {
 	Title []RichText `json:"title"`
 }
 
+type RelationProperty struct {
+	ID string `json:"id"`
+}
+
+// https://developers.notion.com/reference/page#formula-property-values
+type FormulaType string
+
+const (
+	FormulaTypeString  FormulaType = "string"
+	FormulaTypeNumber  FormulaType = "number"
+	FormulaTypeBoolean FormulaType = "boolean"
+	FormulaTypeDate    FormulaType = "date"
+)
+
+type FormulaProperty struct {
+	Type FormulaType `json:"type"`
+	// one of those depending on Type
+	String  string     `json:"string"`
+	Number  float64    `json:"number"`
+	Boolean bool       `json:"boolean"`
+	Date    *time.Time `json:"date,omitempty"`
+}
+
 // DatabasePageProperties are properties of a page whose parent is a database.
 type DatabasePageProperties map[string]DatabasePageProperty
 
@@ -48,17 +71,15 @@ type DatabasePageProperty struct {
 	ID   string               `json:"id,omitempty"`
 	Type DatabasePropertyType `json:"type"`
 
-	Title       []RichText       `json:"title,omitempty"`
-	RichText    []RichText       `json:"rich_text,omitempty"`
-	Number      float64          `json:"number,omitempty"`
-	Select      *SelectOptions   `json:"select,omitempty"`
-	MultiSelect []SelectOptions  `json:"multi_select,omitempty"`
-	Date        *Date            `json:"date,omitempty"`
-	Formula     *FormulaMetadata `json:"formula,omitempty"`
-	// TODO: this could be an array of objects with "id" property, like:
-	// [ { "id": "uid" }]
-	//Relation    *RelationMetadata `json:"relation,omitempty"`
-	Rollup *RollupMetadata `json:"rollup,omitempty"`
+	Title       []RichText         `json:"title,omitempty"`
+	RichText    []RichText         `json:"rich_text,omitempty"`
+	Number      float64            `json:"number,omitempty"`
+	Select      *SelectOptions     `json:"select,omitempty"`
+	MultiSelect []SelectOptions    `json:"multi_select,omitempty"`
+	Date        *Date              `json:"date,omitempty"`
+	Formula     *FormulaProperty   `json:"formula,omitempty"`
+	Relation    []RelationProperty `json:"relation,omitempty"`
+	Rollup      *RollupMetadata    `json:"rollup,omitempty"`
 
 	// RawJSON is for debugging, shows JSON response from the server
 	RawJSON []byte `json:"-"`
