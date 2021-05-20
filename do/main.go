@@ -20,6 +20,13 @@ func main() {
 		flag.BoolVar(&flgWc, "wc", false, "wc -l on source files")
 		flag.Parse()
 	}
+
+	if flgWc {
+		doLineCount()
+		return
+	}
+
+	flag.Usage()
 }
 
 var srcFiles = u.MakeAllowedFileFilterForExts(".go", ".js", ".html", ".css")
