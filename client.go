@@ -89,7 +89,8 @@ func (c *Client) doHTTPAndUnmarshalResponse(req *http.Request, val interface{}, 
 // See: https://developers.notion.com/reference/get-database
 func (c *Client) GetDatabase(ctx context.Context, id string) (*Database, error) {
 
-	req, err := c.newRequest(ctx, http.MethodGet, "/databases/"+id, nil)
+	uri := "/databases/" + id
+	req, err := c.newRequest(ctx, http.MethodGet, uri, nil)
 	if err != nil {
 		return nil, fmt.Errorf("notion: invalid request: %w", err)
 	}
@@ -101,15 +102,15 @@ func (c *Client) GetDatabase(ctx context.Context, id string) (*Database, error) 
 
 // QueryDatabase returns database contents, with optional filters, sorts and pagination.
 // See: https://developers.notion.com/reference/post-database-query
-func (c *Client) QueryDatabase(ctx context.Context, id string, query *DatabaseQuery) (*DatabaseQueryResponse, error) {
+func (c *Client) QueryDatabase(ctx context.Context, id string, query DatabaseQuery) (*DatabaseQueryResponse, error) {
 	body := &bytes.Buffer{}
-
 	err := json.NewEncoder(body).Encode(query)
 	if err != nil {
 		return nil, fmt.Errorf("notion: failed to encode filter to JSON: %w", err)
 	}
 
-	req, err := c.newRequest(ctx, http.MethodPost, fmt.Sprintf("/databases/%v/query", id), body)
+	uri := "/databases/" + id + "/query"
+	req, err := c.newRequest(ctx, http.MethodPost, uri, body)
 	if err != nil {
 		return nil, fmt.Errorf("notion: invalid request: %w", err)
 	}
@@ -122,7 +123,8 @@ func (c *Client) QueryDatabase(ctx context.Context, id string, query *DatabaseQu
 // GetPage fetches information about a page by ID
 // See: https://developers.notion.com/reference/get-page
 func (c *Client) GetPage(ctx context.Context, id string) (*Page, error) {
-	req, err := c.newRequest(ctx, http.MethodGet, "/pages/"+id, nil)
+	uri := "/pages/" + id
+	req, err := c.newRequest(ctx, http.MethodGet, uri, nil)
 	if err != nil {
 		return nil, fmt.Errorf("notion: invalid request: %w", err)
 	}
@@ -134,45 +136,27 @@ func (c *Client) GetPage(ctx context.Context, id string) (*Page, error) {
 
 // CreatePage creates a new page in the specified database or as a child of an existing page.
 // See: https://developers.notion.com/reference/post-page
-func (c *Client) CreatePage(ctx context.Context, params CreatePageParams) (page Page, err error) {
+func (c *Client) CreatePage(ctx context.Context, params CreatePageParams) (*Page, error) {
 	if err := params.Validate(); err != nil {
-		return Page{}, fmt.Errorf("notion: invalid page params: %w", err)
+		return nil, fmt.Errorf("notion: invalid page params: %w", err)
 	}
 
 	body := &bytes.Buffer{}
 
-	err = json.NewEncoder(body).Encode(params)
+	err := json.NewEncoder(body).Encode(params)
 	if err != nil {
-		return Page{}, fmt.Errorf("notion: failed to encode body params to JSON: %w", err)
+		return nil, fmt.Errorf("notion: failed to encode body params to JSON: %w", err)
 	}
 
-	req, err := c.newRequest(ctx, http.MethodPost, "/pages", body)
+	uri := "/pages"
+	req, err := c.newRequest(ctx, http.MethodPost, uri, body)
 	if err != nil {
-		return Page{}, fmt.Errorf("notion: invalid request: %w", err)
+		return nil, fmt.Errorf("notion: invalid request: %w", err)
 	}
 
-	resp, err := c.httpClient.Do(req)
-	if err != nil {
-		return Page{}, fmt.Errorf("notion: failed to make HTTP request: %w", err)
-	}
-
-	page.RawJSON, err = ioutil.ReadAll(resp.Body)
-	resp.Body.Close()
-
-	if err != nil {
-		return page, err
-	}
-
-	if resp.StatusCode != http.StatusOK {
-		return page, fmt.Errorf("notion: failed to create page: %w", parseErrorResponseJSON(page.RawJSON))
-	}
-
-	err = json.Unmarshal(page.RawJSON, &page)
-	if err != nil {
-		return page, fmt.Errorf("notion: failed to parse HTTP response: %w", err)
-	}
-
-	return page, nil
+	var res Page
+	res.RawJSON, err = c.doHTTPAndUnmarshalResponse(req, &res, "create page")
+	return &res, err
 }
 
 // UpdatePageProps updates page property values for a page.
@@ -189,7 +173,8 @@ func (c *Client) UpdatePageProps(ctx context.Context, pageID string, params Upda
 		return Page{}, fmt.Errorf("notion: failed to encode body params to JSON: %w", err)
 	}
 
-	req, err := c.newRequest(ctx, http.MethodPatch, "/pages/"+pageID, body)
+	uri := "/pages/" + pageID
+	req, err := c.newRequest(ctx, http.MethodPatch, uri, body)
 	if err != nil {
 		return Page{}, fmt.Errorf("notion: invalid request: %w", err)
 	}
@@ -215,7 +200,8 @@ func (c *Client) UpdatePageProps(ctx context.Context, pageID string, params Upda
 // GetBlockChildren returns a list of block children for a given block ID.
 // See: https://developers.notion.com/reference/get-block-children
 func (c *Client) GetBlockChildren(ctx context.Context, blockID string, query *PaginationQuery) (*BlockChildrenResponse, error) {
-	req, err := c.newRequest(ctx, http.MethodGet, fmt.Sprintf("/blocks/%v/children", blockID), nil)
+	uri := "/blocks/" + blockID + "/children"
+	req, err := c.newRequest(ctx, http.MethodGet, uri, nil)
 	if err != nil {
 		return nil, fmt.Errorf("notion: invalid request: %w", err)
 	}
@@ -251,7 +237,8 @@ func (c *Client) AppendBlockChildren(ctx context.Context, blockID string, childr
 		return Block{}, fmt.Errorf("notion: failed to encode body params to JSON: %w", err)
 	}
 
-	req, err := c.newRequest(ctx, http.MethodPatch, fmt.Sprintf("/blocks/%v/children", blockID), body)
+	uri := "/blocks/" + blockID + "/children"
+	req, err := c.newRequest(ctx, http.MethodPatch, uri, body)
 	if err != nil {
 		return Block{}, fmt.Errorf("notion: invalid request: %w", err)
 	}
@@ -277,7 +264,9 @@ func (c *Client) AppendBlockChildren(ctx context.Context, blockID string, childr
 // FindUserByID fetches a user by ID.
 // See: https://developers.notion.com/reference/get-user
 func (c *Client) GetUser(ctx context.Context, id string) (*User, error) {
-	req, err := c.newRequest(ctx, http.MethodGet, "/users/"+id, nil)
+
+	uri := "/users/" + id
+	req, err := c.newRequest(ctx, http.MethodGet, uri, nil)
 	if err != nil {
 		return nil, fmt.Errorf("notion: invalid request: %w", err)
 	}
@@ -290,7 +279,9 @@ func (c *Client) GetUser(ctx context.Context, id string) (*User, error) {
 // ListUsers returns a list of all users, and pagination metadata.
 // See: https://developers.notion.com/reference/get-users
 func (c *Client) ListUsers(ctx context.Context, query *PaginationQuery) (*ListUsersResponse, error) {
-	req, err := c.newRequest(ctx, http.MethodGet, "/users", nil)
+
+	uri := "/users"
+	req, err := c.newRequest(ctx, http.MethodGet, uri, nil)
 	if err != nil {
 		return nil, fmt.Errorf("notion: invalid request: %w", err)
 	}
@@ -349,7 +340,8 @@ func (c *Client) Search(ctx context.Context, opts *SearchOpts) (result SearchRes
 		}
 	}
 
-	req, err := c.newRequest(ctx, http.MethodPost, "/search", body)
+	uri := "/search"
+	req, err := c.newRequest(ctx, http.MethodPost, uri, body)
 	if err != nil {
 		return SearchResponse{}, fmt.Errorf("notion: invalid request: %w", err)
 	}
