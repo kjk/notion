@@ -9,6 +9,45 @@ import (
 // Test database: https://www.notion.so/b8d975b27cdd441da97e035ecbb04ee7
 // b8d975b27cdd441da97e035ecbb04ee7
 
+func showDatabaseProperty(name string, prop notion.DatabaseProperty) {
+	logf("    property: '%s'\n", name)
+	logf("      id: %s\n", prop.ID)
+	logf("      type: %s\n", prop.Type)
+	if prop.Number != nil {
+		num := prop.Number
+		logf("      format: %s\n", num.Format)
+	} else if prop.Select != nil {
+		sel := prop.Select
+		for _, selopt := range sel.Options {
+			logf("      sel opt: %s\n", selopt.ID)
+			logf("        name: %s\n", selopt.Name)
+			logf("        color: %s\n", selopt.Color)
+		}
+	} else if prop.MultiSelect != nil {
+		msel := prop.MultiSelect
+		for _, selopt := range msel.Options {
+			logf("      sel opt: %s\n", selopt.ID)
+			logf("        name: %s\n", selopt.Name)
+			logf("        color: %s\n", selopt.Color)
+		}
+	} else if prop.Formula != nil {
+		f := prop.Formula
+		logf("      expression: %s\n", f.Expression)
+	} else if prop.Relation != nil {
+		r := prop.Relation
+		logf("    database id: %s\n", r.DatabaseID)
+		logf("    synced prop idd: %s\n", r.SyncedPropID)
+		logf("    synced prop name: %s\n", r.SyncedPropName)
+	} else if prop.Rollup != nil {
+		r := prop.Rollup
+		logf("      relation prop id: %s\n", r.RelationPropID)
+		logf("      relation prop name: %s\n", r.RelationPropName)
+		logf("      rollup prop id: %s\n", r.RollupPropID)
+		logf("      rollup prop name: %s\n", r.RollupPropName)
+		logf("      function: %s\n", r.Function)
+	}
+}
+
 func showDatabaseInfo(db *notion.Database) {
 	logf("database:\n")
 	logf("  ID: '%s'\n", db.ID)
@@ -17,8 +56,7 @@ func showDatabaseInfo(db *notion.Database) {
 	showRichText(1, "Title", db.Title)
 	logf("  %d properties:\n", len(db.Properties))
 	for name, prop := range db.Properties {
-		// TODO: better display of properties
-		logf("    %s: %v\n", name, prop)
+		showDatabaseProperty(name, prop)
 	}
 }
 
