@@ -3,6 +3,7 @@ module github.com/kjk/notion
 go 1.16
 
 require (
+	github.com/google/go-cmp v0.5.5 // indirect
 	github.com/json-iterator/go v1.1.11 // indirect
 	github.com/kjk/u v0.0.0-20210327060556-13ea33918991
 	github.com/klauspost/cpuid/v2 v2.0.6 // indirect

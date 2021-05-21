@@ -54,15 +54,14 @@ func isNil(v interface{}) bool {
 }
 
 func (c *Client) newRequestJSON(ctx context.Context, method, url string, params interface{}) (*http.Request, error) {
-	if isNil(params) {
-		return c.newRequest(ctx, method, url, nil)
+	body := &bytes.Buffer{}
+	if !isNil(params) {
+		err := json.NewEncoder(body).Encode(params)
+		if err != nil {
+			return nil, fmt.Errorf("notion: failed to encode body params to JSON: %w", err)
+		}
 	}
 
-	body := &bytes.Buffer{}
-	err := json.NewEncoder(body).Encode(params)
-	if err != nil {
-		return nil, fmt.Errorf("notion: failed to encode body params to JSON: %w", err)
-	}
 	return c.newRequest(ctx, method, url, body)
 }
 
@@ -96,7 +95,7 @@ func (c *Client) doHTTPAndUnmarshalResponse(req *http.Request, val interface{}, 
 	}
 
 	if resp.StatusCode != http.StatusOK {
-		return d, fmt.Errorf("notion: failed to '%s': %w", op, parseErrorResponseJSON(d))
+		return d, fmt.Errorf("notion: failed to %s: %w", op, parseErrorResponseJSON(d))
 	}
 
 	err = json.Unmarshal(d, val)

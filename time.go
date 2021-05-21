@@ -40,3 +40,9 @@ func (t *Time) String() string {
 	v := time.Time(*t)
 	return v.String()
 }
+
+func (t Time) Equal(t2 Time) bool {
+	tt := time.Time(t)
+	tt2 := time.Time(t2)
+	return tt.Equal(tt2)
+}

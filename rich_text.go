@@ -34,7 +34,6 @@ type Mention struct {
 }
 
 type Date struct {
-	// TODO: this also must accept "2019-09-11"
 	Start Time  `json:"start"`
 	End   *Time `json:"end,omitempty"`
 }
