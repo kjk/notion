@@ -70,6 +70,7 @@ Official Notion API is still limited:
 * https://github.com/kjk/notionapi : another Go client I wrote, this one uses unofficial API
 * https://github.com/makenotion/notion-sdk-js : official node SDK from Notion
 * https://github.com/dstotijn/go-notion : another Go client
+* https://github.com/jomei/notionapi : another Go client
 
 ## License
 
