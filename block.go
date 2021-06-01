@@ -20,7 +20,7 @@ type Block struct {
 	NumberedListItem *RichTextBlock `json:"numbered_list_item,omitempty"`
 	ToDo             *ToDo          `json:"to_do,omitempty"`
 	Toggle           *RichTextBlock `json:"toggle,omitempty"`
-	ChildPage        *ChildPage     `json:"rich_text,omitempty"`
+	ChildPage        *ChildPage     `json:"child_page,omitempty"`
 
 	RawJSON []byte `json:"-"`
 }
